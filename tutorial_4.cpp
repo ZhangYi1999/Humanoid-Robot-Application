@@ -16,6 +16,7 @@ static const std::string MASK_WINDOW = "Mask";
 static const std::string HIST_WINDOW = "Histogram";
 static const std::string TRACK_WINDOW = "Tracking";
 static const std::string FLOW_WINDOW = "Optical Flow";
+static const std::string MARKER_WINDOW = "3D marker position";
 
 const int max_value = 255;
 int low_S = 0;
@@ -75,6 +76,8 @@ public:
   cv::moveWindow(TRACK_WINDOW,500,500);
   cv::namedWindow(FLOW_WINDOW);
   cv::moveWindow(FLOW_WINDOW,1000,0);
+  cv::namedWindow(MARKER_WINDOW);
+  cv::moveWindow(MARKER_WINDOW,1000,500);
 
   }
   
@@ -188,10 +191,11 @@ public:
     // Task 10 3D marker position
     aruco::MarkerDetector mark_detector;
     std::vector<Marker> detected_marker;
-    mark_detector.detect(srcimg,detected_marker,TheCameraParameters,0.01,false)
+    mark_detector.detect(srcimg,detected_marker,TheCameraParameters,0.01,false);
+    cv::Mat marker_img = srcimg;
     for (unsigned i = 0; i< detectedMarkers.size(); i++ )
     {
-      mark_detector.draw(srcimg,detected_marker);
+      mark_detector.draw(marker_img,detected_marker);
     }
 
     // Update GUI Window
@@ -199,6 +203,7 @@ public:
     cv::imshow(MASK_WINDOW, mask_image);
     cv::imshow(HIST_WINDOW, histImage);
     cv::imshow(TRACK_WINDOW, template_img);
+    cv::imshow(MARKER_WINDOW, marker_img);
     cv::waitKey(3);
 
       
