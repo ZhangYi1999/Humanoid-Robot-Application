@@ -6,6 +6,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <aruco/aruco.h>
+#include <aruco/cvdrawingutils.h>
 #include <opencv2/opencv.hpp>
 
 
@@ -94,6 +95,30 @@ public:
     ROS_ERROR("cv_bridge exception: %s", e.what());
     return;
   }
+
+    cv::Mat srcimg = cv_ptr->image;
+
+    // Camera parameters
+    cv::Mat dist(1,5,CV_32FC1);
+    dist.at<float>(0,0)=-0.066494;
+    dist.at<float>(0,1)=0.095481;
+    dist.at<float>(0,2)=-0.000279;
+    dist.at<float>(0,3)=0.002292;
+    dist.at<float>(0,4)=0.000000;
+    cv::Mat cameraP(3,3,CV_32FC1);
+    cameraP.at<float>(0,0)=551.543059;
+    cameraP.at<float>(0,1)=0.000000;
+    cameraP.at<float>(0,2)=327.382898;
+    cameraP.at<float>(1,0)=0.000000;
+    cameraP.at<float>(1,1)=553.736023;
+    cameraP.at<float>(1,2)=225.026380;
+    cameraP.at<float>(2,0)=0.000000;
+    cameraP.at<float>(2,1)=0.000000;
+    cameraP.at<float>(2,2)=1.000000;
+
+    TheCameraParameters.setParams(cameraP,dist,Size(640,480));
+    TheCameraParameters.resize( Size(640,480));
+
     // Task 3
     // read image
     template_img = cv::imread("/home/hrsd/tutorial_4_ws/templateImg.jpg");
@@ -159,6 +184,15 @@ public:
     
     // Task 8&9 Optical Flow
 
+
+    // Task 10 3D marker position
+    aruco::MarkerDetector mark_detector;
+    std::vector<Marker> detected_marker;
+    mark_detector.detect(srcimg,detected_marker,TheCameraParameters,0.01,false)
+    for (unsigned i = 0; i< detectedMarkers.size(); i++ )
+    {
+      mark_detector.draw(srcimg,detected_marker);
+    }
 
     // Update GUI Window
     cv::imshow(ROI_WINDOW, crop_image_hsv);
