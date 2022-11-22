@@ -1,0 +1,79 @@
+Determining if the pthread_create exist failed with the following output:
+Change Dir: /home/hrsd/tutorial_5_ws/build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_804c5/fast"
+/usr/bin/make -f CMakeFiles/cmTC_804c5.dir/build.make CMakeFiles/cmTC_804c5.dir/build
+make[1]: Entering directory '/home/hrsd/tutorial_5_ws/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake: /home/hrsd/pynaoqi/libssl.so.1.0.0: no version information available (required by /usr/lib/x86_64-linux-gnu/libcurl.so.4)
+/usr/bin/cmake: /home/hrsd/pynaoqi/libssl.so.1.0.0: no version information available (required by /usr/lib/x86_64-linux-gnu/libcurl.so.4)
+/usr/bin/cmake: /home/hrsd/pynaoqi/libssl.so.1.0.0: no version information available (required by /usr/lib/x86_64-linux-gnu/libcurl.so.4)
+/usr/bin/cmake: /home/hrsd/pynaoqi/libcrypto.so.1.0.0: no version information available (required by /usr/lib/x86_64-linux-gnu/libcurl.so.4)
+Building C object CMakeFiles/cmTC_804c5.dir/CheckSymbolExists.c.o
+/usr/bin/cc     -o CMakeFiles/cmTC_804c5.dir/CheckSymbolExists.c.o   -c /home/hrsd/tutorial_5_ws/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+/usr/bin/cmake: /home/hrsd/pynaoqi/libssl.so.1.0.0: no version information available (required by /usr/lib/x86_64-linux-gnu/libcurl.so.4)
+/usr/bin/cmake: /home/hrsd/pynaoqi/libssl.so.1.0.0: no version information available (required by /usr/lib/x86_64-linux-gnu/libcurl.so.4)
+/usr/bin/cmake: /home/hrsd/pynaoqi/libssl.so.1.0.0: no version information available (required by /usr/lib/x86_64-linux-gnu/libcurl.so.4)
+/usr/bin/cmake: /home/hrsd/pynaoqi/libcrypto.so.1.0.0: no version information available (required by /usr/lib/x86_64-linux-gnu/libcurl.so.4)
+Linking C executable cmTC_804c5
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_804c5.dir/link.txt --verbose=1
+/usr/bin/cmake: /home/hrsd/pynaoqi/libssl.so.1.0.0: no version information available (required by /usr/lib/x86_64-linux-gnu/libcurl.so.4)
+/usr/bin/cmake: /home/hrsd/pynaoqi/libssl.so.1.0.0: no version information available (required by /usr/lib/x86_64-linux-gnu/libcurl.so.4)
+/usr/bin/cmake: /home/hrsd/pynaoqi/libssl.so.1.0.0: no version information available (required by /usr/lib/x86_64-linux-gnu/libcurl.so.4)
+/usr/bin/cmake: /home/hrsd/pynaoqi/libcrypto.so.1.0.0: no version information available (required by /usr/lib/x86_64-linux-gnu/libcurl.so.4)
+/usr/bin/cc       CMakeFiles/cmTC_804c5.dir/CheckSymbolExists.c.o  -o cmTC_804c5 -rdynamic 
+CMakeFiles/cmTC_804c5.dir/CheckSymbolExists.c.o: In function `main':
+CheckSymbolExists.c:(.text+0x16): undefined reference to `pthread_create'
+collect2: error: ld returned 1 exit status
+CMakeFiles/cmTC_804c5.dir/build.make:97: recipe for target 'cmTC_804c5' failed
+make[1]: *** [cmTC_804c5] Error 1
+make[1]: Leaving directory '/home/hrsd/tutorial_5_ws/build/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_804c5/fast' failed
+make: *** [cmTC_804c5/fast] Error 2
+
+File /home/hrsd/tutorial_5_ws/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <pthread.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef pthread_create
+  return ((int*)(&pthread_create))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the function pthread_create exists in the pthreads failed with the following output:
+Change Dir: /home/hrsd/tutorial_5_ws/build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_81819/fast"
+/usr/bin/make -f CMakeFiles/cmTC_81819.dir/build.make CMakeFiles/cmTC_81819.dir/build
+make[1]: Entering directory '/home/hrsd/tutorial_5_ws/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake: /home/hrsd/pynaoqi/libssl.so.1.0.0: no version information available (required by /usr/lib/x86_64-linux-gnu/libcurl.so.4)
+/usr/bin/cmake: /home/hrsd/pynaoqi/libssl.so.1.0.0: no version information available (required by /usr/lib/x86_64-linux-gnu/libcurl.so.4)
+/usr/bin/cmake: /home/hrsd/pynaoqi/libssl.so.1.0.0: no version information available (required by /usr/lib/x86_64-linux-gnu/libcurl.so.4)
+/usr/bin/cmake: /home/hrsd/pynaoqi/libcrypto.so.1.0.0: no version information available (required by /usr/lib/x86_64-linux-gnu/libcurl.so.4)
+Building C object CMakeFiles/cmTC_81819.dir/CheckFunctionExists.c.o
+/usr/bin/cc    -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_81819.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.5/Modules/CheckFunctionExists.c
+/usr/bin/cmake: /home/hrsd/pynaoqi/libssl.so.1.0.0: no version information available (required by /usr/lib/x86_64-linux-gnu/libcurl.so.4)
+/usr/bin/cmake: /home/hrsd/pynaoqi/libssl.so.1.0.0: no version information available (required by /usr/lib/x86_64-linux-gnu/libcurl.so.4)
+/usr/bin/cmake: /home/hrsd/pynaoqi/libssl.so.1.0.0: no version information available (required by /usr/lib/x86_64-linux-gnu/libcurl.so.4)
+/usr/bin/cmake: /home/hrsd/pynaoqi/libcrypto.so.1.0.0: no version information available (required by /usr/lib/x86_64-linux-gnu/libcurl.so.4)
+Linking C executable cmTC_81819
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_81819.dir/link.txt --verbose=1
+/usr/bin/cmake: /home/hrsd/pynaoqi/libssl.so.1.0.0: no version information available (required by /usr/lib/x86_64-linux-gnu/libcurl.so.4)
+/usr/bin/cmake: /home/hrsd/pynaoqi/libssl.so.1.0.0: no version information available (required by /usr/lib/x86_64-linux-gnu/libcurl.so.4)
+/usr/bin/cmake: /home/hrsd/pynaoqi/libssl.so.1.0.0: no version information available (required by /usr/lib/x86_64-linux-gnu/libcurl.so.4)
+/usr/bin/cmake: /home/hrsd/pynaoqi/libcrypto.so.1.0.0: no version information available (required by /usr/lib/x86_64-linux-gnu/libcurl.so.4)
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTC_81819.dir/CheckFunctionExists.c.o  -o cmTC_81819 -rdynamic -lpthreads 
+/usr/bin/ld: cannot find -lpthreads
+collect2: error: ld returned 1 exit status
+CMakeFiles/cmTC_81819.dir/build.make:97: recipe for target 'cmTC_81819' failed
+make[1]: *** [cmTC_81819] Error 1
+make[1]: Leaving directory '/home/hrsd/tutorial_5_ws/build/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_81819/fast' failed
+make: *** [cmTC_81819/fast] Error 2
+
+

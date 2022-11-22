@@ -1,0 +1,2 @@
+nao_control_tutorial_1
+-DCATKIN_DEVEL_PREFIX=/home/hrsd/tutorial_5_ws/devel -DCMAKE_INSTALL_PREFIX=/home/hrsd/tutorial_5_ws/install -G Unix Makefiles

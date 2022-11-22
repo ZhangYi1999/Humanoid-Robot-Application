@@ -1,0 +1,2 @@
+set(tutorial_5_ws_MESSAGE_FILES "")
+set(tutorial_5_ws_SERVICE_FILES "/home/hrsd/tutorial_5_ws/src/nao_control_tutorial_1/srv/MoveJoints.srv")
