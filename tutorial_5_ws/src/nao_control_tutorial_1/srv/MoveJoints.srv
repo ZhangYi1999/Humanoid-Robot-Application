@@ -1,7 +1,7 @@
 #CREATE request parameters
 int8 id
-string[] name
-float[] angle
+string[] names
+float[] angles
 float[] speed
 float[] time_second
 
