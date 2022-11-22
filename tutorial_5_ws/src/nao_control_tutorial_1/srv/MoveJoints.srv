@@ -1,8 +1,8 @@
 #CREATE request parameters
-int8 id
+int8 mode
 string[] names
 float[] angles
-float[] speed
+float max_speed
 float[] time_second
 
 --------------------------------
