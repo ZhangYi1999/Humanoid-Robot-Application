@@ -1,0 +1,6 @@
+devel_space: /home/tau/Documents/humanoid_ws22/tutorial_6/devel
+install: false
+install_space: /home/tau/Documents/humanoid_ws22/tutorial_6/install
+profile: default
+source_space: /home/tau/Documents/humanoid_ws22/tutorial_6/src
+workspace: /home/tau/Documents/humanoid_ws22/tutorial_6

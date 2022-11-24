@@ -1,0 +1,12 @@
+#CREATE request parameters
+--------------------------------
+#CREATE response parameters
+int8 task
+string name
+float32[] current
+
+float32 mask
+float32[] target
+
+float32 max_speed
+float32 time

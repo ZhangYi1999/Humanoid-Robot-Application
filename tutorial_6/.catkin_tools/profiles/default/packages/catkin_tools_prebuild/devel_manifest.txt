@@ -1,0 +1,13 @@
+/home/tau/Documents/humanoid_ws22/tutorial_6/build/catkin_tools_prebuild
+/home/tau/Documents/humanoid_ws22/tutorial_6/devel/.private/catkin_tools_prebuild/env.sh /home/tau/Documents/humanoid_ws22/tutorial_6/devel/./env.sh
+/home/tau/Documents/humanoid_ws22/tutorial_6/devel/.private/catkin_tools_prebuild/setup.bash /home/tau/Documents/humanoid_ws22/tutorial_6/devel/./setup.bash
+/home/tau/Documents/humanoid_ws22/tutorial_6/devel/.private/catkin_tools_prebuild/local_setup.bash /home/tau/Documents/humanoid_ws22/tutorial_6/devel/./local_setup.bash
+/home/tau/Documents/humanoid_ws22/tutorial_6/devel/.private/catkin_tools_prebuild/local_setup.zsh /home/tau/Documents/humanoid_ws22/tutorial_6/devel/./local_setup.zsh
+/home/tau/Documents/humanoid_ws22/tutorial_6/devel/.private/catkin_tools_prebuild/local_setup.sh /home/tau/Documents/humanoid_ws22/tutorial_6/devel/./local_setup.sh
+/home/tau/Documents/humanoid_ws22/tutorial_6/devel/.private/catkin_tools_prebuild/cmake.lock /home/tau/Documents/humanoid_ws22/tutorial_6/devel/./cmake.lock
+/home/tau/Documents/humanoid_ws22/tutorial_6/devel/.private/catkin_tools_prebuild/_setup_util.py /home/tau/Documents/humanoid_ws22/tutorial_6/devel/./_setup_util.py
+/home/tau/Documents/humanoid_ws22/tutorial_6/devel/.private/catkin_tools_prebuild/setup.zsh /home/tau/Documents/humanoid_ws22/tutorial_6/devel/./setup.zsh
+/home/tau/Documents/humanoid_ws22/tutorial_6/devel/.private/catkin_tools_prebuild/setup.sh /home/tau/Documents/humanoid_ws22/tutorial_6/devel/./setup.sh
+/home/tau/Documents/humanoid_ws22/tutorial_6/devel/.private/catkin_tools_prebuild/share/catkin_tools_prebuild/cmake/catkin_tools_prebuildConfig-version.cmake /home/tau/Documents/humanoid_ws22/tutorial_6/devel/share/catkin_tools_prebuild/cmake/catkin_tools_prebuildConfig-version.cmake
+/home/tau/Documents/humanoid_ws22/tutorial_6/devel/.private/catkin_tools_prebuild/share/catkin_tools_prebuild/cmake/catkin_tools_prebuildConfig.cmake /home/tau/Documents/humanoid_ws22/tutorial_6/devel/share/catkin_tools_prebuild/cmake/catkin_tools_prebuildConfig.cmake
+/home/tau/Documents/humanoid_ws22/tutorial_6/devel/.private/catkin_tools_prebuild/lib/pkgconfig/catkin_tools_prebuild.pc /home/tau/Documents/humanoid_ws22/tutorial_6/devel/lib/pkgconfig/catkin_tools_prebuild.pc
