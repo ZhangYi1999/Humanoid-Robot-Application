@@ -1,12 +1,12 @@
 #CREATE request parameters
---------------------------------
-#CREATE response parameters
 int8 task
 string name
-float32[] current
 
 float32 mask
-float32[] target
+geometry_msgs/Twist target
 
 float32 max_speed
 float32 time
+--------------------------------
+#CREATE response parameters
+geometry_msgs/Twist current
