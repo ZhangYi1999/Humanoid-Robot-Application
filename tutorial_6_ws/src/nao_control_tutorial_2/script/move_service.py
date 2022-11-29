@@ -52,16 +52,18 @@ def handle_move_joints(req):
         # top optical to top camera
         target_in_camera = (R.T).dot(target_position)
         # transformation from camera to torso
+        name = "CameraTop"
         camera_torso = motionProxy.getTransform(name, frame, useSensorValues)
-        camera_torso_np = np.arange(16,0)
+        camera_torso_np = np.zeros(16)
         for i in range(16):
             camera_torso_np[i] = camera_torso[i]
         transform_tor_cam = np.reshape(camera_torso_np,(4,4))
         # homogen position of aruco in camera
-        homo_pos_cam = np.array([target_in_camera[0]],[target_in_camera[1]],[target_in_camera[2]],[1.0])
+        homo_pos_cam = np.array([[target_in_camera[0]],[target_in_camera[1]],[target_in_camera[2]],[1.0]])
         # homogen position of aruco in torso
         homo_pos_torso = transform_tor_cam.dot(homo_pos_cam)
-        homo_pos_torso.reshape((4,4))
+        #print(np.shape(homo_pos_torso))
+        homo_pos_torso = np.reshape(homo_pos_torso,4)
 
         right_name = "RHand"
         left_name = "LHand"
