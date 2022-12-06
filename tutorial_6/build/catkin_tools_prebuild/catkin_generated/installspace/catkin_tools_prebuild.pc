@@ -1,8 +1,0 @@
-prefix=/home/tau/Documents/humanoid_ws22/tutorial_6/install
-
-Name: catkin_tools_prebuild
-Description: Description of catkin_tools_prebuild
-Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 

@@ -6,6 +6,7 @@
 #include <cmath>
 #include <cstring>
 #include <vector>
+#include <unistd.h>
 
 #include <ros/ros.h>
 
@@ -29,8 +30,9 @@
 
 class Nao_control
 {
-    nao_control_tutorial_2::MoveJoints srv;
 public:
+    nao_control_tutorial_2::MoveJoints srv;
+
     // ros handler
     ros::NodeHandle nh_;
 
@@ -58,6 +60,7 @@ public:
         image_sub_ = it_.subscribe("/nao_robot/camera/top/camera/image_raw", 500, &Nao_control::imageCallBack, this);
             // service client
     move_joint_client = nh_.serviceClient <nao_control_tutorial_2::MoveJoints>("/move_joints");
+        srv.request.flag = false;
     }
 
     ~Nao_control()
@@ -110,6 +113,7 @@ public:
             roll = arucoMarkers[0].Rvec.at<float>(0);
             pitch = arucoMarkers[0].Rvec.at<float>(1);
             yaw = arucoMarkers[0].Rvec.at<float>(2);
+            srv.request.flag = true;
 
         }
         else
@@ -121,6 +125,7 @@ public:
                 roll = 0.0;
                 pitch = 0.0;
                 yaw = 0.0;
+                srv.request.flag = false;
         }
         // ROS_INFO_STREAM("aruco_x ="<<aruco_x);
         // ROS_INFO_STREAM("aruco_y ="<<aruco_y);
@@ -178,13 +183,13 @@ void task1(){
     else {
         srv.request.mask = 63;
         ROS_INFO("63");}
-    
+
     // get the target pose
     // ROS_INFO("Please enter the target pose: ");
 
-    srv.request.target.linear.x = target_pos[0];
-    srv.request.target.linear.y = target_pos[1];
-    srv.request.target.linear.z = target_pos[2];
+    srv.request.target.linear.x = 0.22292258962988853;
+    srv.request.target.linear.y = 0.014743306441232562;
+    srv.request.target.linear.z = 0.15634573623538017;
     srv.request.target.angular.x = target_pos[3];
     srv.request.target.angular.y = target_pos[4];
     srv.request.target.angular.z = target_pos[5];
@@ -218,8 +223,10 @@ void task2() {
     srv.request.task = 3;
     srv.request.mask = 7;
     srv.request.name = "CameraTop";
-    srv.request.max_speed = 1.0;
+    srv.request.max_speed = 0.5;
+    ROS_INFO("%f, %f, %f", aruco_x,aruco_y,aruco_z);
 
+    
     if (move_joint_client.call(srv)) 
         ROS_INFO("Service called");
     else 
@@ -247,8 +254,16 @@ int main(int argc, char** argv)
     if (task_num == 1) 
         my_NAO_ControlInstance.task1();
     else if (task_num == 2) 
-        my_NAO_ControlInstance.task2();
+    while (1){
+        sleep(0.5);
+        if(my_NAO_ControlInstance.srv.request.flag){
+            my_NAO_ControlInstance.task2();
+           
+        }
+        ros::spinOnce();
+    }
     ros::spin();
+
     return 0;
 
 }

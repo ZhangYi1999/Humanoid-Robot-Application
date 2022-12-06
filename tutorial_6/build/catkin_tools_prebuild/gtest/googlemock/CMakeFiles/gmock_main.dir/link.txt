@@ -1,1 +1,0 @@
-/usr/bin/c++ -fPIC   -shared -Wl,-soname,libgmock_main.so -o ../lib/libgmock_main.so CMakeFiles/gmock_main.dir/src/gmock_main.cc.o  -Wl,-rpath,/home/tau/Documents/humanoid_ws22/tutorial_6/build/catkin_tools_prebuild/gtest/lib ../lib/libgmock.so ../lib/libgtest.so -lpthread 
