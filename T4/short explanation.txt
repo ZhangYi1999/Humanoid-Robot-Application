@@ -1,0 +1,5 @@
+In Meanshift we use probablity map to calculate the next point. 
+The map from backprojection tells us where could be the right one, the denser it is, the higher probability it has. 
+Meanshift is to shift the search window to the area of maximum pixel density. 
+However, the object may move forwards or backwards, which means we should not use the same window size. 
+So, CAMshift will update the window size every time in order to bound the moving object correctly.
