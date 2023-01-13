@@ -1,0 +1,31 @@
+count: 5
+
+ticket_1:
+  ID: 123
+  Name: Jack
+  From: Munich
+  To: Hamburg
+
+ticket_2:
+  ID: 456
+  Name: Mike
+  From: Munich
+  To: Hamburg
+
+ticket_3:
+  ID: 789
+  Name: Amy
+  From: Munich
+  To: Hamburg
+
+ticket_4:
+  ID: 101
+  Name: Tom
+  From: Munich
+  To: Hamburg
+
+ticket_5:
+  ID: 112
+  Name: John
+  From: Munich
+  To: Hamburg

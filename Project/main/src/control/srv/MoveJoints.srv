@@ -1,0 +1,14 @@
+#CREATE request parameters
+int8 task
+string name
+
+float32 mask
+geometry_msgs/Twist target
+
+float32 max_speed
+float32 time
+
+bool flag
+--------------------------------
+#CREATE response parameters
+geometry_msgs/Twist current
