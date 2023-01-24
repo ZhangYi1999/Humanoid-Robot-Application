@@ -9,20 +9,20 @@ class Ticket
 {
 public:
     int Id;
-    string Name;
-    string From;
-    string Destination;
+    std::string Name;
+    std::string From;
+    std::string Destination;
 
-    Ticket(int id,string name,string from,string dest) : Id(id), Name(name), From(from), Destination(dest) {};
-}
+    Ticket(int id,std::string name,std::string from,std::string dest) : Id(id), Name(name), From(from), Destination(dest) {};
+};
 
 
 class TicketChecker
 {
 private:
     cv::QRCodeDetector detector;
-    string message;
-    vector<Ticket> tickets;
+    std::string message;
+    std::vector<Ticket> tickets;
     int ticket_num;
 public:
     TicketChecker();
@@ -30,5 +30,6 @@ public:
 
     bool checkQRcode(cv::Mat img);
     bool checkValid();
+    std::string getMessage();
 
 };

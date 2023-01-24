@@ -1,0 +1,8 @@
+prefix=/home/hrsd/project_workspace/Project/main/devel/.private/control
+
+Name: control
+Description: Description of control
+Version: 1.0.0
+Cflags: -I/home/hrsd/project_workspace/Project/main/devel/.private/control/include
+Libs: -L${prefix}/lib 
+Requires: message_runtime

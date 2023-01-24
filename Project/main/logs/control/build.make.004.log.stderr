@@ -1,0 +1,10 @@
+[01m[K/home/hrsd/project_workspace/Project/main/src/control/src/Application/main.cpp:[m[K In member function ‘[01m[Kvoid Nao_control::checkTicket()[m[K’:
+[01m[K/home/hrsd/project_workspace/Project/main/src/control/src/Application/main.cpp:94:58:[m[K [01;31m[Kerror: [m[K‘[01m[Kclass TicketChecker[m[K’ has no member named ‘[01m[KgetMesssage[m[K’
+                     std::cout<<"Ticket valid. "<<checker.getMesssage()<<std::endl;
+[01;32m[K                                                          ^[m[K
+[01m[K/home/hrsd/project_workspace/Project/main/src/control/src/Application/main.cpp:96:59:[m[K [01;31m[Kerror: [m[K‘[01m[Kclass TicketChecker[m[K’ has no member named ‘[01m[KgetMesssage[m[K’
+                     std::cout<<"Ticket invalid."<<checker.getMesssage()<<std::endl;
+[01;32m[K                                                           ^[m[K
+make[2]: *** [CMakeFiles/control.dir/src/Application/main.cpp.o] Error 1
+make[1]: *** [CMakeFiles/control.dir/all] Error 2
+make: *** [all] Error 2

@@ -1,0 +1,89 @@
+Symlinking /home/hrsd/project_workspace/Project/main/devel/lib/libticket.so
+Symlinking /home/hrsd/project_workspace/Project/main/devel/lib/python2.7/dist-packages/control/__init__.py
+Symlinking /home/hrsd/project_workspace/Project/main/devel/lib/python2.7/dist-packages/control/srv/_MoveJoints.py
+Symlinking /home/hrsd/project_workspace/Project/main/devel/lib/python2.7/dist-packages/control/srv/__init__.py
+Symlinking /home/hrsd/project_workspace/Project/main/devel/lib/pkgconfig/control.pc
+Symlinking /home/hrsd/project_workspace/Project/main/devel/lib/control/control
+Symlinking /home/hrsd/project_workspace/Project/main/devel/include/control/MoveJointsResponse.h
+Symlinking /home/hrsd/project_workspace/Project/main/devel/include/control/MoveJointsRequest.h
+Symlinking /home/hrsd/project_workspace/Project/main/devel/include/control/MoveJoints.h
+Symlinking /home/hrsd/project_workspace/Project/main/devel/share/roseus/ros/control/manifest.l
+Symlinking /home/hrsd/project_workspace/Project/main/devel/share/roseus/ros/control/srv/MoveJoints.l
+Symlinking /home/hrsd/project_workspace/Project/main/devel/share/control/cmake/control-msg-paths.cmake
+Symlinking /home/hrsd/project_workspace/Project/main/devel/share/control/cmake/control-msg-extras.cmake
+Symlinking /home/hrsd/project_workspace/Project/main/devel/share/control/cmake/controlConfig-version.cmake
+Symlinking /home/hrsd/project_workspace/Project/main/devel/share/control/cmake/controlConfig.cmake
+Symlinking /home/hrsd/project_workspace/Project/main/devel/share/gennodejs/ros/control/_index.js
+Symlinking /home/hrsd/project_workspace/Project/main/devel/share/gennodejs/ros/control/srv/_index.js
+Symlinking /home/hrsd/project_workspace/Project/main/devel/share/gennodejs/ros/control/srv/MoveJoints.js
+Symlinking /home/hrsd/project_workspace/Project/main/devel/share/common-lisp/ros/control/srv/control-srv.asd
+Symlinking /home/hrsd/project_workspace/Project/main/devel/share/common-lisp/ros/control/srv/_package.lisp
+Symlinking /home/hrsd/project_workspace/Project/main/devel/share/common-lisp/ros/control/srv/_package_MoveJoints.lisp
+Symlinking /home/hrsd/project_workspace/Project/main/devel/share/common-lisp/ros/control/srv/MoveJoints.lisp
+Cleaning: (/home/hrsd/humanoid_ws22-main/Project/main/devel/.private/control/cmake.lock, /home/hrsd/humanoid_ws22-main/Project/main/devel/./cmake.lock)
+Cleaning: (/home/hrsd/humanoid_ws22-main/Project/main/devel/.private/control/lib/libticket.so, /home/hrsd/humanoid_ws22-main/Project/main/devel/lib/libticket.so)
+Cleaning: (/home/hrsd/humanoid_ws22-main/Project/main/devel/.private/control/lib/python2.7/dist-packages/control/__init__.py, /home/hrsd/humanoid_ws22-main/Project/main/devel/lib/python2.7/dist-packages/control/__init__.py)
+Cleaning: (/home/hrsd/humanoid_ws22-main/Project/main/devel/.private/control/lib/python2.7/dist-packages/control/srv/_MoveJoints.py, /home/hrsd/humanoid_ws22-main/Project/main/devel/lib/python2.7/dist-packages/control/srv/_MoveJoints.py)
+Cleaning: (/home/hrsd/humanoid_ws22-main/Project/main/devel/.private/control/lib/python2.7/dist-packages/control/srv/__init__.py, /home/hrsd/humanoid_ws22-main/Project/main/devel/lib/python2.7/dist-packages/control/srv/__init__.py)
+Cleaning: (/home/hrsd/humanoid_ws22-main/Project/main/devel/.private/control/lib/pkgconfig/control.pc, /home/hrsd/humanoid_ws22-main/Project/main/devel/lib/pkgconfig/control.pc)
+Cleaning: (/home/hrsd/humanoid_ws22-main/Project/main/devel/.private/control/lib/control/control, /home/hrsd/humanoid_ws22-main/Project/main/devel/lib/control/control)
+Cleaning: (/home/hrsd/humanoid_ws22-main/Project/main/devel/.private/control/include/control/MoveJointsResponse.h, /home/hrsd/humanoid_ws22-main/Project/main/devel/include/control/MoveJointsResponse.h)
+Cleaning: (/home/hrsd/humanoid_ws22-main/Project/main/devel/.private/control/include/control/MoveJointsRequest.h, /home/hrsd/humanoid_ws22-main/Project/main/devel/include/control/MoveJointsRequest.h)
+Cleaning: (/home/hrsd/humanoid_ws22-main/Project/main/devel/.private/control/include/control/MoveJoints.h, /home/hrsd/humanoid_ws22-main/Project/main/devel/include/control/MoveJoints.h)
+Cleaning: (/home/hrsd/humanoid_ws22-main/Project/main/devel/.private/control/share/roseus/ros/control/manifest.l, /home/hrsd/humanoid_ws22-main/Project/main/devel/share/roseus/ros/control/manifest.l)
+Cleaning: (/home/hrsd/humanoid_ws22-main/Project/main/devel/.private/control/share/roseus/ros/control/srv/MoveJoints.l, /home/hrsd/humanoid_ws22-main/Project/main/devel/share/roseus/ros/control/srv/MoveJoints.l)
+Cleaning: (/home/hrsd/humanoid_ws22-main/Project/main/devel/.private/control/share/control/cmake/control-msg-paths.cmake, /home/hrsd/humanoid_ws22-main/Project/main/devel/share/control/cmake/control-msg-paths.cmake)
+Cleaning: (/home/hrsd/humanoid_ws22-main/Project/main/devel/.private/control/share/control/cmake/control-msg-extras.cmake, /home/hrsd/humanoid_ws22-main/Project/main/devel/share/control/cmake/control-msg-extras.cmake)
+Cleaning: (/home/hrsd/humanoid_ws22-main/Project/main/devel/.private/control/share/control/cmake/controlConfig-version.cmake, /home/hrsd/humanoid_ws22-main/Project/main/devel/share/control/cmake/controlConfig-version.cmake)
+Cleaning: (/home/hrsd/humanoid_ws22-main/Project/main/devel/.private/control/share/control/cmake/controlConfig.cmake, /home/hrsd/humanoid_ws22-main/Project/main/devel/share/control/cmake/controlConfig.cmake)
+Cleaning: (/home/hrsd/humanoid_ws22-main/Project/main/devel/.private/control/share/gennodejs/ros/control/_index.js, /home/hrsd/humanoid_ws22-main/Project/main/devel/share/gennodejs/ros/control/_index.js)
+Cleaning: (/home/hrsd/humanoid_ws22-main/Project/main/devel/.private/control/share/gennodejs/ros/control/srv/_index.js, /home/hrsd/humanoid_ws22-main/Project/main/devel/share/gennodejs/ros/control/srv/_index.js)
+Cleaning: (/home/hrsd/humanoid_ws22-main/Project/main/devel/.private/control/share/gennodejs/ros/control/srv/MoveJoints.js, /home/hrsd/humanoid_ws22-main/Project/main/devel/share/gennodejs/ros/control/srv/MoveJoints.js)
+Cleaning: (/home/hrsd/humanoid_ws22-main/Project/main/devel/.private/control/share/common-lisp/ros/control/srv/control-srv.asd, /home/hrsd/humanoid_ws22-main/Project/main/devel/share/common-lisp/ros/control/srv/control-srv.asd)
+Cleaning: (/home/hrsd/humanoid_ws22-main/Project/main/devel/.private/control/share/common-lisp/ros/control/srv/_package.lisp, /home/hrsd/humanoid_ws22-main/Project/main/devel/share/common-lisp/ros/control/srv/_package.lisp)
+Cleaning: (/home/hrsd/humanoid_ws22-main/Project/main/devel/.private/control/share/common-lisp/ros/control/srv/_package_MoveJoints.lisp, /home/hrsd/humanoid_ws22-main/Project/main/devel/share/common-lisp/ros/control/srv/_package_MoveJoints.lisp)
+Cleaning: (/home/hrsd/humanoid_ws22-main/Project/main/devel/.private/control/share/common-lisp/ros/control/srv/MoveJoints.lisp, /home/hrsd/humanoid_ws22-main/Project/main/devel/share/common-lisp/ros/control/srv/MoveJoints.lisp)
+Unlinking: /home/hrsd/humanoid_ws22-main/Project/main/devel/lib/libticket.so
+Already unlinked: {}
+Unlinking: /home/hrsd/humanoid_ws22-main/Project/main/devel/lib/python2.7/dist-packages/control/__init__.py
+Already unlinked: {}
+Unlinking: /home/hrsd/humanoid_ws22-main/Project/main/devel/lib/python2.7/dist-packages/control/srv/_MoveJoints.py
+Already unlinked: {}
+Unlinking: /home/hrsd/humanoid_ws22-main/Project/main/devel/lib/python2.7/dist-packages/control/srv/__init__.py
+Already unlinked: {}
+Unlinking: /home/hrsd/humanoid_ws22-main/Project/main/devel/lib/pkgconfig/control.pc
+Already unlinked: {}
+Unlinking: /home/hrsd/humanoid_ws22-main/Project/main/devel/lib/control/control
+Already unlinked: {}
+Unlinking: /home/hrsd/humanoid_ws22-main/Project/main/devel/include/control/MoveJointsResponse.h
+Already unlinked: {}
+Unlinking: /home/hrsd/humanoid_ws22-main/Project/main/devel/include/control/MoveJointsRequest.h
+Already unlinked: {}
+Unlinking: /home/hrsd/humanoid_ws22-main/Project/main/devel/include/control/MoveJoints.h
+Already unlinked: {}
+Unlinking: /home/hrsd/humanoid_ws22-main/Project/main/devel/share/roseus/ros/control/manifest.l
+Already unlinked: {}
+Unlinking: /home/hrsd/humanoid_ws22-main/Project/main/devel/share/roseus/ros/control/srv/MoveJoints.l
+Already unlinked: {}
+Unlinking: /home/hrsd/humanoid_ws22-main/Project/main/devel/share/control/cmake/control-msg-paths.cmake
+Already unlinked: {}
+Unlinking: /home/hrsd/humanoid_ws22-main/Project/main/devel/share/control/cmake/control-msg-extras.cmake
+Already unlinked: {}
+Unlinking: /home/hrsd/humanoid_ws22-main/Project/main/devel/share/control/cmake/controlConfig-version.cmake
+Already unlinked: {}
+Unlinking: /home/hrsd/humanoid_ws22-main/Project/main/devel/share/control/cmake/controlConfig.cmake
+Already unlinked: {}
+Unlinking: /home/hrsd/humanoid_ws22-main/Project/main/devel/share/gennodejs/ros/control/_index.js
+Already unlinked: {}
+Unlinking: /home/hrsd/humanoid_ws22-main/Project/main/devel/share/gennodejs/ros/control/srv/_index.js
+Already unlinked: {}
+Unlinking: /home/hrsd/humanoid_ws22-main/Project/main/devel/share/gennodejs/ros/control/srv/MoveJoints.js
+Already unlinked: {}
+Unlinking: /home/hrsd/humanoid_ws22-main/Project/main/devel/share/common-lisp/ros/control/srv/control-srv.asd
+Already unlinked: {}
+Unlinking: /home/hrsd/humanoid_ws22-main/Project/main/devel/share/common-lisp/ros/control/srv/_package.lisp
+Already unlinked: {}
+Unlinking: /home/hrsd/humanoid_ws22-main/Project/main/devel/share/common-lisp/ros/control/srv/_package_MoveJoints.lisp
+Already unlinked: {}
+Unlinking: /home/hrsd/humanoid_ws22-main/Project/main/devel/share/common-lisp/ros/control/srv/MoveJoints.lisp
+Already unlinked: {}

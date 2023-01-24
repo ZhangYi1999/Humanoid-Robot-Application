@@ -27,6 +27,7 @@ add_service_files(
 generate_messages(DEPENDENCIES std_msgs sensor_msgs geometry_msgs)
 
 include_directories(
+  include
   ${catkin_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
 )
@@ -41,9 +42,12 @@ catkin_install_python(PROGRAMS ./script/move_service.py
 
 
 add_executable(control src/Application/main.cpp)
+add_library(ticket src/ticket_checker.cpp)
+
 target_link_libraries(control 
+  ticket
   ${catkin_LIBRARIES}
-  ${OpenCV_LIBRARIES}
+  ${OpenCV_LIBS}
   ${aruco_LIBS}
 )
 add_dependencies(control ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})

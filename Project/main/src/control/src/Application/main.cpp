@@ -12,7 +12,6 @@
 #include <cv_bridge/cv_bridge.h>
 
 
-#include <cv.h>
 #include <highgui.h>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -25,8 +24,9 @@
 #include <tf/transform_broadcaster.h>
 
 #include "sensor_msgs/JointState.h"
-#include "nao_control_tutorial_2/MoveJoints.h"
 #include <string.h>
+
+#include "ticket_checker.h"
 
 enum class Task_State{
     Stand_By,
@@ -48,13 +48,16 @@ private:
     image_transport::ImageTransport it_;
     image_transport::Subscriber image_sub_;
     cv::Mat current_image;
+    TicketChecker checker;
+    bool img_updated;
 
 public:
     Nao_control() : it_(nh_)
     {
-        this.state = Task_State::Stand_By;
-        this.image_sub_ = it_.subscribe("/nao_robot/camera/top/camera/image_raw", 500, &Nao_control::imageCallBack, this);
-        this.
+        state = Task_State::Stand_By;
+        image_sub_ = it_.subscribe("/nao_robot/camera/top/camera/image_raw", 500, &Nao_control::imageCallBack, this);
+        checker = TicketChecker();
+        img_updated=false;
     }
 
     ~Nao_control()
@@ -70,35 +73,50 @@ public:
         {
             cvImagePointer = cv_bridge::toCvShare(msg,sensor_msgs::image_encodings::BGR8);
             current_image = cvImagePointer->image.clone();
+            img_updated=true;
         }
         catch (cv_bridge::Exception& except) 
         {
             ROS_ERROR("cv_bridge exception: %s", except.what());
                 return;
         }
+        cv::imshow("camera",current_image);
+        cv::waitKey(3);
     }
 
     void checkTicket(){
-        cv::QRCodeDetector detector = cv::QRCodeDetector::QRCodeDetector();
-        string message = detector.detectAndDecode(this.current_image);
-        if(message!=null){
-            
-        }
-        else{
-
+        if(img_updated)
+        {
+            img_updated=false;
+            if(checker.checkQRcode(current_image))
+            {
+                checker.checkValid();
+                // if(checker.checkValid())
+                //     std::cout<<"Ticket valid. "<<checker.getMessage()<<std::endl;
+                // else
+                //     std::cout<<"Ticket invalid."<<checker.getMessage()<<std::endl;
+            }
+            else
+            {
+                std::cout<<"No QRcode."<<std::endl;
+            }
         }
     }
 
     void Mode_Switching_loop()
     {
+        std::cout<<"Start Loop."<<std::endl;
+        ros::Rate rate(100);
         while(true){
-            switch(this.state){
+            
+            switch(state){
                 case Task_State::Stand_By:
+                    state = Task_State::Check_Ticket;
                     break;
                 case Task_State::Walking:
                     break;
                 case Task_State::Check_Ticket:
-                    
+                    checkTicket();
                     break;
                 case Task_State::Check_Face:
                     
@@ -109,6 +127,7 @@ public:
             }
 
             ros::spinOnce();
+            rate.sleep();
         }    
     }
 
