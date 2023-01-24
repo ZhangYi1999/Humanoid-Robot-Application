@@ -4,7 +4,7 @@ TicketChecker::TicketChecker(){
     this->detector = cv::QRCodeDetector();	
     this->message = "";
    
-    ros::param::get("count",this->ticket_num);
+    ros::param::get("～count",this->ticket_num);
 
     std::stringstream s;
     for(int i = 0; i < ticket_num; i++){
