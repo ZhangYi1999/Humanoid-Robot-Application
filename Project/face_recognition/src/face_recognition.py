@@ -54,7 +54,7 @@ if __name__ == '__main__':
     dir_path = os.getcwd()
     pkg_path = os.path.dirname(dir_path)
     syl_path = os.path.join(pkg_path, '/face_img/syl.jpg')
-    syl_image = face_recognition.load_image_file(syl_path)
+    # syl_image = face_recognition.load_image_file('/home/hrsd/humanoid_ws22-main-Project/Project_ws/src/face_recognition/face_img/syl.jpg')
     syl_face_encoding = face_recognition.face_encodings(syl_image)[0]
     known_face_encodings = [
         syl_face_encoding
