@@ -28,6 +28,10 @@ private:
     bool check_face_flag; // if detected face
     std::string ticket_name; // name from ticket
 
+    // task 4
+    std::vector<int> ticket_detected; // used for count the passagers, so they never use the ticket twice
+    int ticket_id = 0;
+
 public:
     TicketChecker();
     ~TicketChecker();
@@ -45,5 +49,9 @@ public:
 
     // task 3
     bool check_attention(cv::Mat img);
+
+    // task 4
+    void change_ticket(){ticket_detected[ticket_id]++;};
+    int get_ticket_valid(){return ticket_detected[ticket_id];};
 
 };

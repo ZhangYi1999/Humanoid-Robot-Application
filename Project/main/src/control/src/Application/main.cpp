@@ -35,6 +35,7 @@ enum class Task_State{
     Walking,
     Check_Ticket,
     Wait_Questions,
+    Pass_Count,
     Switching
 };
 
@@ -60,12 +61,15 @@ private:
     cv::Mat current_image;
     TicketChecker checker;
 
-    int checked_ticket; // we only have 5 tickets, as along as we already checked 5 tickets, change mode
+    // task 2
     bool check_ticket_flag; // means robot is already in check ticket mode
     std::string name_on_ticket;// name on ticket, in order to varify if name on ticket is the same as name from face detection
 
     // used for the 3. task
     bool check_attention;
+
+    // used for the 4. task
+    int pass_num;
 
 
 public:
@@ -81,6 +85,9 @@ public:
 
         // task 3
         check_attention = false;
+
+        // task 4
+        pass_num = 0; // in the init state, we assum that there is no one in the container
     }
 
     ~Nao_control()
@@ -97,8 +104,9 @@ public:
             cvImagePointer = cv_bridge::toCvShare(msg,sensor_msgs::image_encodings::BGR8);
             current_image = cvImagePointer->image.clone();
 
+            //////////////////////////////////////////////// task 2 ///////////////////////////////////////////////////////
             // detected QR code, change the state from standby to check ticket
-            if(state == Task_State::Check_Ticket && (checked_ticket < 5) && checker.checkQRcode(current_image)){
+            if(state == Task_State::Check_Ticket && (pass_num < 5) && checker.checkQRcode(current_image)){
                 if (!check_ticket_flag) {
                     state = Task_State::Check_Ticket; // avoid nao always change mode
                     check_ticket_flag = true;
@@ -107,7 +115,7 @@ public:
             }
 
             // frame of face recognition will also come from camera, so the followed line should be wrote about face detection condition
-            else if (state == Task_State::Check_Ticket && (checked_ticket < 5) && checker.check_face(current_image)){
+            else if (state == Task_State::Check_Ticket && (pass_num < 5) && checker.check_face(current_image)){
                 // find face 
                 checker.get_check_face_flag = true;
             }
@@ -134,30 +142,38 @@ public:
             std::chrono::seconds sec(5);
 
             bool detected_face_valid = false;
+            // task 4, check if the ticket is already used
+            if (checker.get_ticket_valid() == 0){
+                while ((start_time - std::chrono::system_clock::now()) < sec){
+                    if(checker.get_check_face_flag()){
+                        // increase the checked ticket number
+                        pass_num ++;
+                        detected_face_valid = true;
+                        // task 4, check the num of passagers
+                        pass_num++;
+                        checker.change_ticket();
+                        break;
+                    }
 
-            while ((start_time - std::chrono::system_clock::now()) < sec){
-                if(checker.get_check_face_flag()){
-                    // increase the checked ticket number
-                    checked_ticket ++;
-                    detected_face_valid = true;
-                    break;
+                    // ticket is vaild but ticket is not correspond to the face
+                    else{
+                        usleep(500000);
+                        std::cout<<"show you face, dont be shy"<<std::endl;
+                        // and do or say something perhaps
+
+                    }
+                }
+                if (detected_face_valid){
+                    // ticket check success nao should do something, for example say something
+                }
+                else {
+                    // neither dont detected face nor face is not correspond to ticket
                 }
 
-                // ticket is vaild but ticket is not correspond to the face
-                else{
-                    usleep(500000);
-                    std::cout<<"show you face, dont be shy"<<std::endl;
-                    // and do or say something perhaps
-
-                }
-            }
-            if (detected_face_valid){
-                // ticket check success nao should do something, for example say something
             }
             else {
-                // neither dont detected face nor face is not correspond to ticket
+                std::cout<<"Ticket has been used"<< std::endl;
             }
-
         }
         else{
             std::cout<<"Ticket is not valid."<<std::endl; 
@@ -176,9 +192,29 @@ public:
             
 //////////////////////// task 3////////////////////////////////////////////////////////////
     void wait_questions(){
-
+        if (check_attention){
+            // wait for the questions from visitor by voice detection
+            // provide explanation and motion
+        }
+        else {
+            // wait for 3 seconds, if still cannot detect face, visitor may go away
+            auto start_time = std::chrono::system_clock::now();
+            std::chrono::seconds sec(5);
+            bool detect_attention = false;
+            while ((start_time - std::chrono::system_clock::now()) < sec)
+                if (check_attention){
+                    detect_attention = true;
+                    break;
+                }
+            // change mode
+            if (!detect_attention)
+                state = Task_State::Switching;
     }
 
+///////////////////////////////// task 4 ////////////////////////////////////////////////////77
+    void pass_count(){
+
+    }
 
 //////////////////////////////////////////// mode switching ////////////////////////////////////////////
     void Mode_Switching_loop()
@@ -188,6 +224,7 @@ public:
         while(ros::ok()){
             
             switch(state){
+                // init mode
                 case Task_State::Stand_By:
                     //state = Task_State::Check_Ticket;
                     break;
@@ -196,7 +233,7 @@ public:
                     break;
                 // task 2
                 case Task_State::Check_Ticket:
-                    if (checked_ticket >= 5) state = Task_State::Wait_Questions
+                    if (pass_num >= 5) state = Task_State::Wait_Questions
                     break;
                 // task 3
                 case Task_State::Wait_Questions:
@@ -204,7 +241,11 @@ public:
                     //
                     wait_questions();
                     break;
-
+                // task 4
+                case Task_State::Pass_Count:
+                    pass_count();
+                    break;
+                
                 case Task_State::Switching:
                     
                     break;

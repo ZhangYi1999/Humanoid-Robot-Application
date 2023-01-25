@@ -29,6 +29,8 @@ TicketChecker::TicketChecker(){
         tickets.push_back(Ticket(id,Name,From,Destination));
 
         check_face_flag = false;
+
+        ticket_detected = std::vector<int>(5,0);
     }
 }
     
@@ -59,7 +61,6 @@ bool TicketChecker::checkValid(){
         previous = current + 1;
         current = str.find(delim, previous);
         std::string Name = str.substr(previous, current - previous);
-        ticket_name = Name;
         previous = current + 1;
         current = str.find(delim, previous);
         std::string From = str.substr(previous, current - previous);
@@ -76,6 +77,10 @@ bool TicketChecker::checkValid(){
             bool same_to = Destination.compare(this->tickets[i].Destination)==0;
             std::cout<<"id: "<<this->tickets[i].Id<<" name: "<<this->tickets[i].Name<<" From: "<<this->tickets[i].From<<" To: "<<this->tickets[i].Destination<<std::endl;
             if(same_id & same_name & same_from & same_to){
+                // task 3
+                ticket_name = Name;
+                // task 4
+                ticket_id = id;
                 return true;
             }
         }
