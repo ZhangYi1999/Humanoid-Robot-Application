@@ -24,12 +24,26 @@ private:
     std::string message;
     std::vector<Ticket> tickets;
     int ticket_num;
+
+    bool check_face_flag; // if detected face
+    std::string ticket_name; // name from ticket
+
 public:
     TicketChecker();
     ~TicketChecker();
 
     bool checkQRcode(cv::Mat img);
-    bool checkValid();
+
+    bool checkValid(); // check if the ticket is vaild
+    void check_face(cv::Mat img); // find the face and get the name of face
+    
+    bool get_check_face_flag(){return check_face_flag;};
+    std::string get_ticket_name(){return ticket_name;};
+    //bool check_station();
+
     std::string getMessage();
+
+    // task 3
+    bool check_attention(cv::Mat img);
 
 };

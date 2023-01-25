@@ -27,6 +27,8 @@ TicketChecker::TicketChecker(){
         ros::param::get(s.str(),Destination);
 
         tickets.push_back(Ticket(id,Name,From,Destination));
+
+        check_face_flag = false;
     }
 }
     
@@ -57,6 +59,7 @@ bool TicketChecker::checkValid(){
         previous = current + 1;
         current = str.find(delim, previous);
         std::string Name = str.substr(previous, current - previous);
+        ticket_name = Name;
         previous = current + 1;
         current = str.find(delim, previous);
         std::string From = str.substr(previous, current - previous);
@@ -81,6 +84,16 @@ bool TicketChecker::checkValid(){
     else{
         return false;
     }
+}
+
+// face detection prograss
+bool TicketChecker::check_face(cv::Mat img){
+    // use face detection detect face from camera frame and compare it with "ticket_name"
+    // if they are the same, return true, 
+}
+
+bool TicketCheckter::check_attention(cv::Mat img){
+    // if face detection can detect a face, return true
 }
 
 std::string TicketChecker::getMessage(){
