@@ -1,1 +1,0 @@
-/usr/bin/c++ -fPIC -shared -Wl,-soname,libticket.so -o /home/hrsd/project_workspace/Project/main/devel/.private/control/lib/libticket.so CMakeFiles/ticket.dir/src/ticket_checker.cpp.o 

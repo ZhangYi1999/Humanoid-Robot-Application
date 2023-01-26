@@ -1,6 +1,0 @@
-devel_space: /home/hrsd/project_workspace/Project/main/devel
-install: false
-install_space: /home/hrsd/project_workspace/Project/main/install
-profile: default
-source_space: /home/hrsd/project_workspace/Project/main/src
-workspace: /home/hrsd/project_workspace/Project/main
