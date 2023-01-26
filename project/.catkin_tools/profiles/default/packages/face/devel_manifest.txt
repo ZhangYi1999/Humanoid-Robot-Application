@@ -1,7 +1,0 @@
-face
-/home/yingleisong/humanoid_ws22/project/devel/.private/face/cmake.lock /home/yingleisong/humanoid_ws22/project/devel/./cmake.lock
-/home/yingleisong/humanoid_ws22/project/devel/.private/face/lib/face/face.py /home/yingleisong/humanoid_ws22/project/devel/lib/face/face.py
-/home/yingleisong/humanoid_ws22/project/devel/.private/face/lib/face/cmake.lock /home/yingleisong/humanoid_ws22/project/devel/lib/face/cmake.lock
-/home/yingleisong/humanoid_ws22/project/devel/.private/face/lib/pkgconfig/face.pc /home/yingleisong/humanoid_ws22/project/devel/lib/pkgconfig/face.pc
-/home/yingleisong/humanoid_ws22/project/devel/.private/face/share/face/cmake/faceConfig.cmake /home/yingleisong/humanoid_ws22/project/devel/share/face/cmake/faceConfig.cmake
-/home/yingleisong/humanoid_ws22/project/devel/.private/face/share/face/cmake/faceConfig-version.cmake /home/yingleisong/humanoid_ws22/project/devel/share/face/cmake/faceConfig-version.cmake
