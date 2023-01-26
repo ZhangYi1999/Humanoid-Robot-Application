@@ -35,14 +35,12 @@ enum class Task_State{
     Walking,
     Check_Ticket,
     Wait_Questions,
-    Pass_Count,
-    Switching
+    Pass_Count
 };
 
 enum class Train_station{
     Hamburg,
     Hannover,
-    Nuremberg,
     Munich
 }
 
@@ -53,7 +51,6 @@ private:
     ros::NodeHandle nh_;
 
     Task_State state;
-    Train_station current_station;
 
     // Image transport and subscriber:
     image_transport::ImageTransport it_;
@@ -71,15 +68,17 @@ private:
     // used for the 4. task
     int pass_num;
 
+    // used for 5. task
+    Train_station current_station;
+
 
 public:
     Nao_control() : it_(nh_)
     {
         state = Task_State::Stand_By;
-        image_sub_ = it_.subscribe("/nao_robot/camera/top/camera/image_raw", 500, &Nao_control::imageCallBack, this);
+        image_sub_ = it_.subscribe("/nao_robot/camera/top/camera/image_raw", 1, &Nao_control::imageCallBack, this);
         checker = TicketChecker();
         img_updated=false;
-        current_station = Train_station::Hamburg;
         checked_ticket = 0;
         check_ticket_flag = false;
 
@@ -88,10 +87,12 @@ public:
 
         // task 4
         pass_num = 0; // in the init state, we assum that there is no one in the container
+
+        // task 5
+        current_station = Train_station::Hamburg;
     }
 
-    ~Nao_control()
-    {
+    ~Nao_control(){
     }
 
     // Image callback function is executed when a new image is received:
@@ -106,23 +107,41 @@ public:
 
             //////////////////////////////////////////////// task 2 ///////////////////////////////////////////////////////
             // detected QR code, change the state from standby to check ticket
-            if(state == Task_State::Check_Ticket && (pass_num < 5) && checker.checkQRcode(current_image)){
+            if((state == Task_State::Stand_By || state == Task_State::Check_Ticket) && (pass_num < 3) && checker.checkQRcode(current_image)){
                 if (!check_ticket_flag) {
                     state = Task_State::Check_Ticket; // avoid nao always change mode
                     check_ticket_flag = true;
                 }
-                checkTicket();
+                checkTicket(current_station);
             }
 
             // frame of face recognition will also come from camera, so the followed line should be wrote about face detection condition
-            else if (state == Task_State::Check_Ticket && (pass_num < 5) && checker.check_face(current_image)){
-                // find face 
-                checker.get_check_face_flag = true;
+            else if (state == Task_State::Check_Ticket && (pass_num < 3) && checker.check_face(current_image)){
+                // find face , nao do something
+
+                //checker.get_check_face_flag = true;
+            }
+
+            // container is full, but someone wants go in 
+            else if (state == Task_State::Check_Ticket && pass_num >= 3 && 
+                    (checker.check_face(current_image) || checker.checkQRcode(current_image))){
+                        // nao do something to tell that one go away
+                        container_full();
             }
 
             ///////////////////////////////////////////////// task 3  /////////////////////////////////////////////////////////
             else if (state == Task_State::Wait_Questions){
-                check_attention = checker.check_attation();
+                check_attention = checker.check_attation(current_image);
+            }
+
+            ///////////////////////////////////////////////// task 4 //////////////////////////////////////////////////7
+            // someone wants to leave, show nao QR code
+            else if (state == Task_State::Pass_Count && checker.checkQRcode(current_image)){
+                pass_leave();
+            }
+            // someone wants go in, so he shows his face, change mode
+            else if (state == Task_State::Pass_Count && checker.check_face(current_image)){
+                state = Task_State::Check_Ticket;
             }
         }
         catch (cv_bridge::Exception& except) 
@@ -135,8 +154,15 @@ public:
     }
 /////////////////////////////////////////////////////////// task 2 ///////////////////////////////////////7
     // check ticket valid
-    void checkTicket(){
-        if(checker.checkValid()){
+    void checkTicket(Train_station current_station){
+        // travel direction of passenger
+        bool direction = true;
+        if(checker.checkValid(current_station, direction)){
+            // success check the ticket vaild, and get the name on ticket, nao do something 
+            // and ask him to show his face to do face detection
+
+
+            /* perhaps the following code will block callback function
             // success check the ticket vaild, wait 5 seconds for face recognition
             auto start_time = std::chrono::system_clock::now();
             std::chrono::seconds sec(5);
@@ -144,21 +170,20 @@ public:
             bool detected_face_valid = false;
             // task 4, check if the ticket is already used
             if (checker.get_ticket_valid() == 0){
+                // wait 5 sec to let passenger show the face
                 while ((start_time - std::chrono::system_clock::now()) < sec){
                     if(checker.get_check_face_flag()){
                         // increase the checked ticket number
-                        pass_num ++;
                         detected_face_valid = true;
                         // task 4, check the num of passagers
                         pass_num++;
                         checker.change_ticket();
                         break;
                     }
-
                     // ticket is vaild but ticket is not correspond to the face
                     else{
                         usleep(500000);
-                        std::cout<<"show you face, dont be shy"<<std::endl;
+                        std::cout<<"not correct face"<<std::endl;
                         // and do or say something perhaps
 
                     }
@@ -169,10 +194,16 @@ public:
                 else {
                     // neither dont detected face nor face is not correspond to ticket
                 }
-
+            */
             }
             else {
-                std::cout<<"Ticket has been used"<< std::endl;
+                // nao can do something?
+                if (!direction){
+                    std::cout<<"travel in wrong direction"<<std::endl;
+                }
+                else{ 
+                    std::cout<<"Ticket has been used"<< std::endl;
+                }
             }
         }
         else{
@@ -183,13 +214,6 @@ public:
         
     }
 
-    // change train station
-    void set_current_station(){
-        int mid(static_cast<int>(current_station));
-        mid++;
-        current_station = static_cast<Train_station>(mid);
-    }
-            
 //////////////////////// task 3////////////////////////////////////////////////////////////
     void wait_questions(){
         if (check_attention){
@@ -197,7 +221,7 @@ public:
             // provide explanation and motion
         }
         else {
-            // wait for 3 seconds, if still cannot detect face, visitor may go away
+            // wait for 5 seconds, if still cannot detect face, visitor may go away
             auto start_time = std::chrono::system_clock::now();
             std::chrono::seconds sec(5);
             bool detect_attention = false;
@@ -206,14 +230,36 @@ public:
                     detect_attention = true;
                     break;
                 }
+        }
             // change mode
-            if (!detect_attention)
-                state = Task_State::Switching;
+        if (!detect_attention)
+            state = Task_State::Pass_Count;
+    }   
+
+///////////////////////////////// task 4 ////////////////////////////////////////////////////
+// in this mode, passengers will leave or go in.
+    void pass_count(){
+        change_station();
+        // current station has been changed, nao should do something means train station change
     }
 
-///////////////////////////////// task 4 ////////////////////////////////////////////////////77
-    void pass_count(){
+// container full, nao do something to let that one go away
+    void container_full(){
 
+    }
+
+// passenger wants to leave, should nao do something?
+    void pass_leave(){
+        pass_num --;
+    }
+
+/////////////////////////////////// task 5 /////////////////////////////////////////////////
+// change train station
+        // change train station
+    void change_station(){
+        int mid(static_cast<int>(current_station));
+        mid++;
+        current_station = static_cast<Train_station>(mid);
     }
 
 //////////////////////////////////////////// mode switching ////////////////////////////////////////////
@@ -228,26 +274,19 @@ public:
                 case Task_State::Stand_By:
                     //state = Task_State::Check_Ticket;
                     break;
-
-                case Task_State::Walking:
-                    break;
                 // task 2
                 case Task_State::Check_Ticket:
-                    if (pass_num >= 5) state = Task_State::Wait_Questions
+                    if (pass_num >= 3) state = Task_State::Wait_Questions
                     break;
                 // task 3
                 case Task_State::Wait_Questions:
                     // wait for the questions use voice recognition
-                    //
                     wait_questions();
                     break;
-                // task 4
+                // task 4&5, passenger count mode, in this mode we need to count the number of passenger
+                // and change the train station
                 case Task_State::Pass_Count:
                     pass_count();
-                    break;
-                
-                case Task_State::Switching:
-                    
                     break;
             }
 

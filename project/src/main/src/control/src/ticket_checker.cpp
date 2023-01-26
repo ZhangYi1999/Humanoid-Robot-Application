@@ -1,5 +1,15 @@
 #include<ticket_checker.h>
 
+// translation station from string to number
+int station_num(std::string station){
+    if(station == "Hamburg")
+        return 0;
+    else if (station == "Hannover")
+        return 1;
+    else
+        return 2;
+}
+
 TicketChecker::TicketChecker(){
     this->detector = cv::QRCodeDetector();	
     this->message = "";
@@ -49,7 +59,7 @@ bool TicketChecker::checkQRcode(cv::Mat img){
     }
 }
 
-bool TicketChecker::checkValid(){
+bool TicketChecker::checkValid(Train_station current_station, bool &direction){
     if(this->message!=""){
         std::string str=this->message;
 
@@ -69,6 +79,9 @@ bool TicketChecker::checkValid(){
         std::string Destination = str.substr(previous, current - previous);
 
         // std::cout<<"id: "<<id<<" name: "<<Name<<" From: "<<From<<" To: "<<Destination<<std::endl;
+        // translate station to number
+        int from_num = station_num(From); 
+        int des_num = station_num(Destination);
 
         for(int i = 0; i < ticket_num; i++){
             bool same_id = id == this->tickets[i].Id;
@@ -81,6 +94,14 @@ bool TicketChecker::checkValid(){
                 ticket_name = Name;
                 // task 4
                 ticket_id = id;
+                // destination has already arrived or passed
+                if (static_cast<int>(current_station) <= des_num) return false;
+                // passenger traveling in wrong direction
+                if (static_cast<int>(current_station) <= from_num) {
+                    direction = false;
+                    return false;
+                }
+                
                 return true;
             }
         }
@@ -95,12 +116,15 @@ bool TicketChecker::checkValid(){
 bool TicketChecker::check_face(cv::Mat img){
     // use face detection detect face from camera frame and compare it with "ticket_name"
     // if they are the same, return true, 
+    return true;
 }
 
-bool TicketCheckter::check_attention(cv::Mat img){
+bool TicketChecker::check_attention(cv::Mat img){
     // if face detection can detect a face, return true
+    return true;
 }
 
 std::string TicketChecker::getMessage(){
     return this->message;
 }
+

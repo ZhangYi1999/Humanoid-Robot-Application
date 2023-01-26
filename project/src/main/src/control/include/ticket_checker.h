@@ -5,6 +5,12 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/objdetect.hpp>
 
+enum class Train_station{
+    Hamburg,
+    Hannover,
+    Munich
+};
+
 class Ticket
 {
 public:
@@ -38,8 +44,8 @@ public:
 
     bool checkQRcode(cv::Mat img);
 
-    bool checkValid(); // check if the ticket is vaild
-    void check_face(cv::Mat img); // find the face and get the name of face
+    bool checkValid(Train_station current_station, bool &direction); // check if the ticket is vaild
+    bool check_face(cv::Mat img); // find the face and get the name of face
     
     bool get_check_face_flag(){return check_face_flag;};
     std::string get_ticket_name(){return ticket_name;};
