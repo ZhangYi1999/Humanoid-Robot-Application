@@ -12,6 +12,6 @@
 
   <!-- <node pkg="control" type="move_service.py" name="move_service" required="true" args="$(arg nao_ip) $(arg nao_port)" output="screen"/> -->
 
-  <rosparam file="$(find control)/launch/configs/tickets.yaml" command="load"/>
+  <rosparam file="$(find control)/launch/configs/datas.yaml" command="load"/>
 
 </launch>

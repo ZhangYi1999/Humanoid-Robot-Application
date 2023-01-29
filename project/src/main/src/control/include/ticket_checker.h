@@ -5,39 +5,86 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/objdetect.hpp>
 
-enum class Train_station{
-    Hamburg,
-    Hannover,
-    Munich
+std::string str_split(std:string input, char delim);
+
+struct Date{
+    int year;
+    int month;
+    int day;
+}
+
+Date dateFromString(std::string date_str);
+bool date_compare(Date date1, Date date2);
+
+struct Time{
+    int hour;
+    int min;
+}
+
+Time timeFromString(std::string time_str);
+bool time_compare(Time time1, Time time2);
+
+struct Train_station{
+    std::string Name;
+    Date arrival_date;
+    Time arrival_time;
+};
+
+bool station_compare(Train_station staion1,Train_station staion2);
+
+class Train{
+private:
+    std::string name;
+    std::vector<Train_station> stations;
+    int current_station_id;
+    int station_num;
+    Date departure_date;
+    Time departure_time;
+    Date arrival_date;
+    Time arrival_time;
+
+public:
+    Train();
+    bool moveToNextStation();
+    void delay(Date new_arrival_date, Time new_arrival_time);
+    Train_station getStationByName(std::string name);
+    Train_station getCurrentStation();
+    int getStationIdByName(std::string name);
+    int stationDirection(Train_station station);
 };
 
 class Ticket
 {
 public:
-    int Id;
-    std::string Name;
-    std::string From;
-    std::string Destination;
+    std::string id;
+    std::string passenger_Name;
+    Date date;
+    std::string departure_station;
+    std::string destination_station;
+    std::string train_name;
 
-    Ticket(int id,std::string name,std::string from,std::string dest) : Id(id), Name(name), From(from), Destination(dest) {};
+    Ticket(std::string ticket_msg);
+
+    bool compare(Ticket ticket);
 };
 
 
 class TicketChecker
 {
 private:
+    Train train;
+
     cv::QRCodeDetector detector;
     std::string message;
-    std::vector<Ticket> tickets;
+    std::vector<std::string> ticket_ids;
+    std::vector<int> ticket_checked; // used for count the passagers, so they never use the ticket twice
     int ticket_num;
 
+    Ticket current_ticket;
+
+    bool found_qr_code_flag;
     bool check_face_flag; // if detected face
-    std::string ticket_name; // name from ticket
-
-    // task 4
-    std::vector<int> ticket_detected; // used for count the passagers, so they never use the ticket twice
-    int ticket_id = 0;
-
+    
 public:
     TicketChecker();
     ~TicketChecker();
