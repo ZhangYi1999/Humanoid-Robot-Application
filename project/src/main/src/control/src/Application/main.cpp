@@ -297,7 +297,7 @@ public:
             rate.sleep();
         }
         stop_blink();
-        wait(3);
+        wait(5);
         if(over_time){
             say("I didn't see your ticket. Please try it again.");
         }
@@ -323,16 +323,20 @@ public:
                 if(heard_name){
                     heard_name = false;
                     if(checker.current_ticket.passenger_Name.compare(current_name)==0){
+                        start_blink(0,1,0,"pass");
                         say("Hello, "+current_name+". Welcome onboard.");
                     }
                     else{
+                        start_blink(1,0,0,"not self ticket");
                         say("Sorry, "+current_name+". The ticket is not yours.");
                     }
                 }
                 else{
+                    start_blink(1,0,0,"none say");
                     say("I didn't hear you.");
                 }
-                wait(3);
+                wait(8);
+                stop_blink();
             }
             else{
                 wait(2);
