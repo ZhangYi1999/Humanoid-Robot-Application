@@ -1,0 +1,81 @@
+#include <iostream>
+#include <opencv2/opencv.hpp>
+
+using namespace std;
+using namespace cv;
+
+void mytrackBarCallback31(int pos, void* userdata);{
+	Mat* user = (Mat*)userdata; //create new Mat 
+	Mat dst;
+	//set brightness 
+	int bias = getTrackbarPos("bias", "image");
+	cout<<bias;
+	(*user).convertTo(dst, -1, pos * 0.01, bias);
+	imshow("image", dst);
+}
+
+void mytrackBarCallback32(int pos, void* userdata);{
+	Mat* user = (Mat*)userdata;
+	Mat dst;
+	//set contrast
+	int alpha = getTrackbarPos("alpha", "image");
+	(*user).convertTo(dst, -1, alpha * 0.01,pos);
+	imshow("image", dst);
+}
+
+void trackbarTest() {
+    int bias{ 0 };
+	int alpha{ 100 };
+	int biasMax{ 255 };
+	int alphaMax{ 100 };
+	Mat mx = imread(path, 1);
+	namedWindow("image", WINDOW_FREERATIO);
+	//contrast TrackBar using the call back 31
+	createTrackbar("alpha", "image", &alpha, alphaMax, mytrackBarCallback31 , &mx);
+	//brightness TrackBar using call back 32
+	createTrackbar("bias", "image", &bias, biasMax, mytrackBarCallback32 , &mx);
+	waitKey(0);
+
+}
+
+
+int main(){ // new launch file to adjust the image
+
+    Mat src = imread("/home/chen/dataset/zhang.jpg"); // read image
+    if (src.empty()){
+        cout << "could not load image." << endl;
+        return -1;
+    }
+    char input_win[] = "src";
+    namedWindow(input_win, WINDOW_AUTOSIZE);
+    imshow("src", src);
+
+    // set contrast and brightness
+    double alpha = 1.2;  // set contrast input 
+    double beta = 30;  // set brightness input 
+
+    // the new created image
+    Mat dst = Mat::zeros(src.size(), src.type());
+
+    int rows = src.rows;
+    int cols = src.cols;
+
+    for (int row = 0; row < rows - 1; row++){
+        for (int col = 0; col < cols - 1; col++){
+            // RGB pixelwise pic image
+            int b = src.at<Vec3b>(row, col)[0];
+            int g = src.at<Vec3b>(row, col)[1];
+            int r = src.at<Vec3b>(row, col)[2];
+            
+            // set contrast and brightness xx alpha and beta
+            dst.at<Vec3b>(row, col)[0] = saturate_cast<uchar>(alpha*b + beta);
+            dst.at<Vec3b>(row, col)[1] = saturate_cast<uchar>(alpha*g + beta);
+            dst.at<Vec3b>(row, col)[2] = saturate_cast<uchar>(alpha*r + beta);
+        }
+    }
+    namedWindow("dst", WINDOW_AUTOSIZE);
+    imshow("dst", dst);
+
+    waitKey(0);
+    return 0;
+}
