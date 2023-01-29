@@ -6,17 +6,32 @@ import numpy as np
 import almath
 import sys
 from naoqi import ALProxy
-from nao_control_tutorial_2.srv import MoveJoints
+from control.srv import MoveJoints
 from geometry_msgs.msg import Twist
 
 motionProxy =0
 
 
 def handle_move_joints(req):
-    name = req.name
+    names = req.names
     frame = motion.FRAME_TORSO
     useSensorValues = False
-    
+
+    #angles = req.angles
+    #fractionMaxSpeed = req.max_speed
+    #timeLists = req.time_second
+
+    # bring up the arm, in mode 1
+    if (req.mode == 1):
+        motionProxy.setStiffnesses("Body" ,1.0)
+        motionProxy.wakeUp()
+        # nao should bring up or down arm
+        target = [req.target.linear.x,req.target.linear.y,req.target.linear.z,req.target.angular.x,req.target.angular.y,req.target.angular.z]
+        motionProxy.setPositions(names, frame, target, req.max_speed, req.mask)
+        #motionProxy.setAngles(names,angles,fractionMaxSpeed)
+
+    return True
+'''    
     #left_pos_init = motionProxy.getPosition("LArm", frame, useSensorValues)
     left_pos_init = [-0.02435748279094696, 0.10163624584674835, -0.11688806116580963, 1.838066816329956, 1.4746462106704712, -3.0240838527679443]
     right_pos_init = [0.0256733987480402, -0.1004754900932312, -0.11672674119472504, 1.6395059823989868, 1.4415910243988037, 0.1265692412853241]
@@ -116,7 +131,7 @@ def handle_move_joints(req):
         print(target_torso)
 
 
-
+'''
 if __name__ == '__main__':
     robotIP=str(sys.argv[1])
     PORT=int(sys.argv[2])

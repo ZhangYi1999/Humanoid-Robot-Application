@@ -18,6 +18,7 @@
 #include <cv_bridge/cv_bridge.h>
 #include <tf/transform_broadcaster.h>
 #include <std_srvs/Empty.h>
+#include "control/MoveJoints.h"
 
 // Nao include
 #include <naoqi_bridge_msgs/HeadTouch.h>
@@ -103,18 +104,20 @@ private:
     std::string current_name;
     bool heard_name;
 
+    control::MoveJoints srv;
+
     // // task 2
-    // bool check_ticket_flag; // means robot is already in check ticket mode
-    // std::string name_on_ticket;// name on ticket, in order to varify if name on ticket is the same as name from face detection
+    bool check_ticket_flag; // means robot is already in check ticket mode
+    std::string name_on_ticket;// name on ticket, in order to varify if name on ticket is the same as name from face detection
 
     // // used for the 3. task
-    // bool check_attention;
+    bool check_attention;
 
     // // used for the 4. task
-    // int pass_num;
+    int pass_num;
 
     // // used for 5. task
-    // Train_station current_station;
+    Train_station current_station;
 
 
 public:
@@ -141,6 +144,8 @@ public:
 
         eye_led_cancel_pub =  nh_.advertise<actionlib_msgs::GoalID>("/blink/cancel", 1);
 
+        // move joint clent
+        move_joint_client = nh_.serviceClient <control::MoveJoints>("move_joints");
 
         checker.load_data(nh_);
         welcome_once = true;
@@ -156,8 +161,6 @@ public:
             voc_param.goal.words.push_back(checker.tickets[i].passenger_Name);
             std::cout<<"Input Name "<< checker.tickets[i].passenger_Name << " into vocabulary." <<std::endl;
         }
-        
-        
 
         // check_ticket_flag = false;
 
@@ -276,7 +279,10 @@ public:
     void checkTicket(){
         // Ask the passenger for ticket
         say("Hello! You need a ticket to get on the train. Please show me your ticket.");
-        wait(4);
+        //bring up the arm in mode 1
+        move_joint(1,"RArm","up");
+        ros::Duration(3).sleep();
+
         // Wait the passenger to show ticket
         double begin = ros::Time::now().toSec();
         ros::Rate rate(10);
@@ -297,15 +303,14 @@ public:
             rate.sleep();
         }
         stop_blink();
-        wait(5);
+        ros::Duration(5).sleep();
         if(over_time){
             say("I didn't see your ticket. Please try it again.");
         }
         else{
             if(checker.checkValid()){
                 say("What's your name?");
-
-                wait(1);
+                ros::Duration(1).sleep();
 
                 voc_params_pub.publish(voc_param);
                 std_srvs::Empty emp1;
@@ -319,31 +324,41 @@ public:
                 std_srvs::Empty emp2;
                 recog_stop_srv.call(emp2);
 
-                wait(2);
+                ros::Duration(2).sleep();
                 if(heard_name){
                     heard_name = false;
+                    // face recognition
+
+                    //
                     if(checker.current_ticket.passenger_Name.compare(current_name)==0){
                         start_blink(0,1,0,"pass");
+                        move_joint(1,"RArm","down");
                         say("Hello, "+current_name+". Welcome onboard.");
                     }
                     else{
                         start_blink(1,0,0,"not self ticket");
+                        move_joint(1,"LArm","deny");
+                        move_joint(1,"RArm","deny");
                         say("Sorry, "+current_name+". The ticket is not yours.");
+                        ros::Duration(2).sleep();
                     }
                 }
                 else{
                     start_blink(1,0,0,"none say");
+                    move_joint(1,"RArm","down");
                     say("I didn't hear you.");
                 }
-                wait(8);
+                ros::Duration(6).sleep();
                 stop_blink();
             }
             else{
-                wait(2);
+                ros::Duration(2).sleep();
                 start_blink(1,0,0,"invalid qr code");
                 
+                move_joint(1,"LArm","deny");
+                move_joint(1,"RArm","deny");
                 say("The ticket is invalid. You can not get on the train.");
-                wait(8);
+                ros::Duration(6).sleep();
                 stop_blink();
             }
 
@@ -399,20 +414,20 @@ public:
 //         mid++;
 //         current_station = static_cast<Train_station>(mid);
 //     }
-
+/*
     void wait(double duration){
         double begin = ros::Time::now().toSec();
         while(ros::Time::now().toSec() - begin < duration){
              ros::spinOnce();
         }
     }
-
+*/
     void say_welcome(){
         speech_content.goal_id.id = "Welcome";
         speech_content.goal.say = "Hello, welcome to the central station. Here is the German Train " + checker.train.name + ". I am Ticket checker Nao.";
         speech_pub.publish(speech_content);
         speech_content.goal.say="";
-        wait(2);
+        wros::Duration(2).sleep();
     }
 
     void say(std::string msg){
@@ -451,6 +466,49 @@ public:
 
 		eye_led_cancel_pub.publish(blink_cancel);
 
+    }
+
+    void move_joint(int mode, std::string names, std::string move){
+        srv.request.mode = mode;
+        srv.request.names = names;
+        srv.request.mask = 7;
+        srv.request.max_speed = 1.0;
+        if (move == "down"){
+            // put down the arm
+            srv.request.target.linear.x = 0.0256733987480402;
+            srv.request.target.linear.y = -0.1004754900932312;
+            srv.request.target.linear.z = -0.11672674119472504;
+            srv.request.target.angular.x = 1.6395059823989868;
+            srv.request.target.angular.y = 1.4415910243988037;
+            srv.request.target.angular.z = 0.1265692412853241;
+        }
+        else if (move == "up"){
+
+        }
+        
+        else if (move == "deny"){
+
+        }
+
+        else if (move == "agree"){
+            // nod
+            vector<string> jointnames;
+            jointnames.push_back("HeadYaw");
+            jointnames.push_back("HeadPitch");
+            vector<double> time_second;
+            time_second.push_back(0.5);
+            srv.request.names = jointnames;
+            srv.request.angles.push_back(0);
+            srv.request.angles.push_back(10);      
+            srv.request.time_second.push_back(0.1); 
+            srv.request.time_second.push_back(0.1);      
+            srv.request.max_speed = 0.1;
+        }
+
+        if (move_joint_client.call(srv)) 
+            ROS_INFO("Service called");
+        else 
+            ROS_ERROR("Failed");
     }
 
 //////////////////////////////////////////// mode switching ////////////////////////////////////////////
