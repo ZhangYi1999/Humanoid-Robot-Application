@@ -1,13 +1,16 @@
 #include<ticket_checker.h>
 
 //********** definition of self defined function **********//
-std::string str_split(std:string input, char delim){
+std::string str_split(std::string &input,char delim){
     // set the start and end point of sub string
     std::size_t previous = 0;
     // position of first char delim
-    std::size_t current = input.find(delim); 
+    std::size_t current = input.find(delim);
+
+    std::string result = input.substr(previous, current - previous);
+    input =  input.substr(current+1);
     // cut out the sub string
-    return input.substr(previous, current - previous); 
+    return result;
 }
 
 //********** definition of functions of Date and Time **********//
@@ -35,8 +38,8 @@ Time timeFromString(std::string time_str){
     // create a time container
     Time result;
 
-    // split the time string using char ':'
-    result.hour = atoi(str_split(time_str,':').c_str());
+    // split the time string using char '-'
+    result.hour = atoi(str_split(time_str,'-').c_str());
     result.min = atoi(time_str.c_str());
 
     return result;
@@ -58,29 +61,47 @@ bool station_compare(Train_station staion1,Train_station staion2){
 }
 
 //********** definition of functions of class Train **********//
-Train::Train(){
-    ros::param::get("~station_count",this->station_num);
-    ros::param::get("~train_name",this->name);
+std::string Train::getName(){
+    return this->name;
+}
+
+
+void Train::load_data(ros::NodeHandle nh_){
+    nh_.getParam("/station_count",this->station_num);
+    nh_.getParam("/train_name",this->name);
+    std::cout<<"Train ID: "<<this->name<<std::endl;
+    std::cout<<"Station Num: "<<this->station_num<<std::endl;
 
     std::stringstream s;
     for(int i = 0; i < this->station_num; i++){
         Train_station temp_station;
 
         s.str("");
-        s<<"~station_"<<i+1<<"/Name";
-        ros::param::get(s.str(),temp_station.Name);
-
-        std::string date_str;
-        s.str("");
-        s<<"~station_"<<i+1<<"/Date";
-        ros::param::get(s.str(),date_str);
-        temp_station.arrival_date = dateFromString(date_str);
+        s<<"/station_"<<i+1<<"/Name";
+        nh_.getParam(s.str(),temp_station.Name);
 
         std::string time_str;
         s.str("");
-        s<<"~station_"<<i+1<<"/Time";
-        ros::param::get(s.str(),time_str);
+        s<<"/station_"<<i+1<<"/Time";
+        nh_.getParam(s.str(),time_str);
         temp_station.arrival_time = timeFromString(time_str);
+        std::cout<<"time: "<<time_str<<std::endl;
+
+        std::string date_str;
+        s.str("");
+        s<<"/station_"<<i+1<<"/Date";
+        nh_.getParam(s.str(),date_str);
+        temp_station.arrival_date = dateFromString(date_str);
+
+        std::cout<<"Station "<<i+1<<std::endl;
+        std::cout<<"  Name: "<<temp_station.Name<<std::endl;
+        std::cout<<"  Date: year:"<<temp_station.arrival_date.year \
+                 <<" month:" <<temp_station.arrival_date.month \
+                 <<" day:" <<temp_station.arrival_date.day \
+                 <<std::endl;
+        std::cout<<"  Time: hour:"<<temp_station.arrival_time.hour \
+                 <<" min:" <<temp_station.arrival_time.min \
+                 <<std::endl;
 
         this->stations.push_back(temp_station);
     }
@@ -116,7 +137,7 @@ void Train::delay(Date new_arrival_date, Time new_arrival_time){
 Train_station Train::getStationByName(std::string name){
     for(int i = 0; i < this-> station_num; i++) {
         if(this->stations[i].Name.compare(name)==0){
-            return this->station[i];
+            return this->stations[i];
         }
     }
     Train_station dummy_station;
@@ -140,7 +161,7 @@ int Train::getStationIdByName(std::string name){
 int Train::stationDirection(std::string station_name){
     int id = getStationIdByName(station_name);
     if(id!=-1){
-        if(id > this->current_id)
+        if(id > this->current_station_id)
             return 1;
         else 
             return -1;
@@ -153,12 +174,12 @@ int Train::stationDirection(std::string station_name){
 
 //********** definition of functions of class Ticket **********//
 Ticket::Ticket(std::string ticket_msg){
-    this->id = str_split(ticket_msg,',');
-    this->passenger_Name = str_split(ticket_msg,',');
-    this->date = dateFromString(str_split(ticket_msg,','));
-    this->departure_station = str_split(ticket_msg,',');
-    this->destination_station = str_split(ticket_msg,',');
-    this->train_name = ticket_msg;
+    // this->id = str_split(ticket_msg,',');
+    // this->passenger_Name = str_split(ticket_msg,',');
+    // this->date = dateFromString(str_split(ticket_msg,','));
+    // this->departure_station = str_split(ticket_msg,',');
+    // this->destination_station = str_split(ticket_msg,',');
+    // this->train_name = ticket_msg;
 }
 
 bool Ticket::compare(Ticket ticket){
@@ -174,59 +195,89 @@ bool Ticket::compare(Ticket ticket){
 
 //********** definition of functions of class TicketChecker **********//
 
-TicketChecker::TicketChecker(){
+void TicketChecker::load_data(ros::NodeHandle nh_){
+    int ticket_count;
+    nh_.getParam("/ticket_count",ticket_count);
+
+
+    this->train.load_data(nh_);
+
     this->detector = cv::QRCodeDetector();	
     this->message = "";
    
-    ros::param::get("~ticket_count",this->ticket_num);
+    nh_.getParam("/ticket_count",this->ticket_num);
+    std::cout<<"load "<<ticket_count<<" tickets."<<std::endl;
 
     std::stringstream s;
     for(int i = 0; i < this->ticket_num; i++){
-        std::string id;
-        // std::string passenger_Name;
-        // std::string date;
-        // std::string departure_station;
-        // std::string destination_station;
-        // std::string train_name;
+        Ticket temp_ticket;
 
         s.str("");
-        s<<"~ticket_"<<i+1<<"/ID";
-        ros::param::get(s.str(),id);
-        // s.str("");
-        // s<<"~ticket_"<<i+1<<"/Name";
-        // ros::param::get(s.str(),passenger_Name);
-        // s.str("");
-        // s<<"~ticket_"<<i+1<<"/Date";
-        // ros::param::get(s.str(),date);
-        // s.str("");
-        // s<<"~ticket_"<<i+1<<"/From";
-        // ros::param::get(s.str(),departure_station);
-        // s.str("");
-        // s<<"~ticket_"<<i+1<<"/To";
-        // ros::param::get(s.str(),destination_station);
-        // s.str("");
-        // s<<"~ticket_"<<i+1<<"/Train";
-        // ros::param::get(s.str(),train_name);
+        s<<"/ticket_"<<i+1<<"/ID";
+        nh_.getParam(s.str(),temp_ticket.id);
+        std::cout<<"load "<<s.str()<<" "<<temp_ticket.id<<std::endl;
 
-        ticket_ids.push_back(id);   
+        s.str("");
+        s<<"/ticket_"<<i+1<<"/Name";
+        nh_.getParam(s.str(),temp_ticket.passenger_Name);
+
+        std::string date_str;
+        s.str("");
+        s<<"/ticket_"<<i+1<<"/Date";
+        nh_.getParam(s.str(),date_str);
+        temp_ticket.date = dateFromString(date_str);
+
+        s.str("");
+        s<<"/ticket_"<<i+1<<"/From";
+        nh_.getParam(s.str(),temp_ticket.departure_station);
+
+        std::string departure_time_str;
+        s.str("");
+        s<<"/ticket_"<<i+1<<"/DepartureTime";
+        nh_.getParam(s.str(),departure_time_str);
+        temp_ticket.departure_time = timeFromString(departure_time_str);
+
+        s.str("");
+        s<<"/ticket_"<<i+1<<"/To";
+        nh_.getParam(s.str(),temp_ticket.destination_station);
+
+        std::string arrival_time_str;
+        s.str("");
+        s<<"/ticket_"<<i+1<<"/ArrivalTime";
+        nh_.getParam(s.str(),arrival_time_str);
+        temp_ticket.arrival_time = timeFromString(arrival_time_str);
+
+        s.str("");
+        s<<"/ticket_"<<i+1<<"/Train";
+        nh_.getParam(s.str(),temp_ticket.train_name);
+
+        this->tickets.push_back(temp_ticket);  
+        this->ticket_checked.push_back(0); 
     }
-    
-    this->ticket_detected = std::vector<int>(this->ticket_num,0);
+
     this->found_qr_code_flag = false;
     this->check_face_flag = false;
 }
-    
-TicketChecker::~TicketChecker(){
-    // Delete the ticket checker
-}
 
 bool TicketChecker::checkQRcode(cv::Mat img){
-    cv::Mat points;
+    std::vector<cv::Point> points;
     if(this->detector.detect(img,points)){
         // if QR code is detected in the img
-        this->message = this->detector.decode(img,points);
-        this->found_qr_code_flag = true;
-        return true;
+        if(!points.empty()){
+            std::string msg = this->detector.decode(img,points);
+            if(msg.empty()) {
+                return false;
+            }
+            else{
+                this->message = msg;
+                this->found_qr_code_flag = true;
+                return true;
+            } 
+        }
+        else {
+            return false;
+        }
+         
     }
     else{
          // if no QR code in the img
@@ -234,14 +285,25 @@ bool TicketChecker::checkQRcode(cv::Mat img){
     }
 }
 
-bool TicketChecker::checkValid(Train_station current_station, bool &direction){
+bool TicketChecker::checkValid(){
     if(this->found_qr_code_flag){
         // reset the found qr code flag
         this->found_qr_code_flag = false;
 
         // check if the message is in right regular
         if((this->message.substr(0,3)).compare("NAO") == 0) {
-            this->current_ticket = Ticket(this->message);
+            this->current_ticket = getFullTicketfromMsg(this->message);
+
+            Train_station a = this->train.getStationByName(this->current_ticket.departure_station);
+            if(!station_compare(a,this->train.getCurrentStation())){
+                std::cout<<"wrong station "<<std::endl;
+                return false;
+            }
+            else{
+                return true;
+            }
+
+
             // check if the ticket is in same direction
             if(this->train.stationDirection(this->current_ticket.destination_station)>0)
                 return true;
@@ -258,7 +320,7 @@ bool TicketChecker::checkValid(Train_station current_station, bool &direction){
 }
 
 // face detection prograss
-bool TicketChecker::check_face(cv::Mat img){
+bool TicketChecker::check_face(){
     // use face detection detect face from camera frame and compare it with "ticket_name"
     // if they are the same, return true, 
     return true;
@@ -269,7 +331,17 @@ bool TicketChecker::check_attention(cv::Mat img){
     return true;
 }
 
+Ticket TicketChecker::getFullTicketfromMsg(std::string msg){
+    for(int i = 0; i < this->ticket_num; i++){
+        if(this->tickets[i].id.compare(msg)==0)
+            return this->tickets[i];
+    }
+}
+
 std::string TicketChecker::getMessage(){
     return this->message;
 }
 
+std::string TicketChecker::getError(){
+    return "wrong station."; // just for test
+}

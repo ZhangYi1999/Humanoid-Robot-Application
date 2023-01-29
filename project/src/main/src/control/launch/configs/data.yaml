@@ -1,30 +1,30 @@
 station_count: 5
 
-train_name: ICE 680
+train_name: I C E 6 8 0
 
 station_1:
   Name: Munich
-  Time: 9:00
+  Time: 9-00
   Date: 07.02.2023
 
 station_2:
   Name: Ingolstadt
-  Time: 9:45
+  Time: 9-45
   Date: 07.02.2023
 
-station_1:
+station_3:
   Name: Fulda
-  Time: 11:45
+  Time: 11-45
   Date: 07.02.2023
 
-station_1:
+station_4:
   Name: Hannover
-  Time: 13:15
+  Time: 13-15
   Date: 07.02.2023
 
-station_1:
+station_5:
   Name: Hamburg
-  Time: 15:00
+  Time: 15-00
   Date: 07.02.2023
 
 ticket_count: 5
@@ -34,50 +34,50 @@ ticket_1:
   Name: Jack
   Date: 07.02.2023
   From: Munich
-  Departure Time: 9:00
+  DepartureTime: 9-00
   To: Hamburg
-  Arrival Time: 15:00
-  Train: ICE 680
+  ArrivalTime: 15-00
+  Train: I C E 6 8 0
 
 ticket_2:
   ID: NAO2302
   Name: Mike
   Date: 07.02.2023
   From: Munich
-  Departure Time: 9:00
+  DepartureTime: 9-00
   To: Hamburg
-  Arrival Time: 15:00
-  Train: ICE 680
+  ArrivalTime: 15-00
+  Train: I C E 6 8 0
 
 ticket_3:
   ID: NAO2303
   Name: Amy
   Date: 07.02.2023
   From: Munich
-  Departure Time: 9:00
+  DepartureTime: 9-00
   To: Hamburg
-  Arrival Time: 15:00
-  Train: ICE 680
+  ArrivalTime: 15-00
+  Train: I C E 6 8 0
 
 ticket_4:
   ID: NAO2304
   Name: Tom
   Date: 07.02.2023
   From: Hannover
-  Departure Time: 13:15
+  DepartureTime: 13-15
   To: Hamburg
-  Arrival Time: 15:00
-  Train: ICE 680
+  ArrivalTime: 15-00
+  Train: I C E 6 8 0
 
 ticket_5:
   ID: NAO2305
   Name: John
   Date: 07.02.2023
   From: Hannover
-  Departure Time: 13:15
+  DepartureTime: 13-15
   To: Hamburg
-  Arrival Time: 15:00
-  Train: ICE 680
+  ArrivalTime: 15-00
+  Train: I C E 6 8 0
 
 passenger_count: 5
 

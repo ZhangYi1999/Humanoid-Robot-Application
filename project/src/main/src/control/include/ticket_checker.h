@@ -5,13 +5,13 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/objdetect.hpp>
 
-std::string str_split(std:string input, char delim);
+std::string str_split(std::string &input, char delim);
 
 struct Date{
     int year;
     int month;
     int day;
-}
+};
 
 Date dateFromString(std::string date_str);
 bool date_compare(Date date1, Date date2);
@@ -19,7 +19,7 @@ bool date_compare(Date date1, Date date2);
 struct Time{
     int hour;
     int min;
-}
+};
 
 Time timeFromString(std::string time_str);
 bool time_compare(Time time1, Time time2);
@@ -33,7 +33,7 @@ struct Train_station{
 bool station_compare(Train_station staion1,Train_station staion2);
 
 class Train{
-private:
+public:
     std::string name;
     std::vector<Train_station> stations;
     int current_station_id;
@@ -43,14 +43,17 @@ private:
     Date arrival_date;
     Time arrival_time;
 
-public:
-    Train();
+    Train(){}
+    ~Train(){}
+
+    std::string getName();
+    void load_data(ros::NodeHandle nh_);
     bool moveToNextStation();
     void delay(Date new_arrival_date, Time new_arrival_time);
     Train_station getStationByName(std::string name);
     Train_station getCurrentStation();
     int getStationIdByName(std::string name);
-    int stationDirection(Train_station station);
+    int stationDirection(std::string station_name);
 };
 
 class Ticket
@@ -60,10 +63,17 @@ public:
     std::string passenger_Name;
     Date date;
     std::string departure_station;
+    Time departure_time;
     std::string destination_station;
+    Time arrival_time;
     std::string train_name;
 
+    // blank constructor
+    Ticket(){}
+    // from string msg to ticket
     Ticket(std::string ticket_msg);
+
+
 
     bool compare(Ticket ticket);
 };
@@ -71,12 +81,10 @@ public:
 
 class TicketChecker
 {
-private:
-    Train train;
-
+public:
     cv::QRCodeDetector detector;
     std::string message;
-    std::vector<std::string> ticket_ids;
+    std::vector<Ticket> tickets;
     std::vector<int> ticket_checked; // used for count the passagers, so they never use the ticket twice
     int ticket_num;
 
@@ -85,26 +93,22 @@ private:
     bool found_qr_code_flag;
     bool check_face_flag; // if detected face
     
-public:
-    TicketChecker();
-    ~TicketChecker();
+    Train train;
 
-    bool checkQRcode(cv::Mat img);
+    TicketChecker(){}
+    ~TicketChecker(){}
 
-    bool checkValid(Train_station current_station, bool &direction); // check if the ticket is vaild
-    bool check_face(cv::Mat img); // find the face and get the name of face
-    
+    void load_data(ros::NodeHandle nh_);
+    bool checkQRcode(cv::Mat img); // check if there is valid QR code in the img
+    bool checkValid(); // check if the ticket is vaild
+    bool check_face(); // check if there is face in the img
+    bool check_attention(cv::Mat img); // check if there is passenger looking at the camera
+    Ticket getFullTicketfromMsg(std::string msg);
+
     bool get_check_face_flag(){return check_face_flag;};
-    std::string get_ticket_name(){return ticket_name;};
     //bool check_station();
 
     std::string getMessage();
 
-    // task 3
-    bool check_attention(cv::Mat img);
-
-    // task 4
-    void change_ticket(){ticket_detected[ticket_id]++;};
-    int get_ticket_valid(){return ticket_detected[ticket_id];};
-
+    std::string getError();
 };
