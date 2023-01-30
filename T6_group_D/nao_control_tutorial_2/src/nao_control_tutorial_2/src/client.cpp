@@ -166,7 +166,7 @@ void getCurrent(){
 void task1(){
     // set the chain
     ROS_INFO("Please choose desired end effector with number: LArm(1), RArm(2)");
-    int arm = 1;
+    int arm = 2;
     if (arm == 1) 
         srv.request.name = "LArm";
     else if (arm == 2) 
@@ -175,7 +175,7 @@ void task1(){
     // get current position and save it in the srv
     getCurrent();
     ROS_INFO("current pose is: %f,%f,%f,%f,%f,%f",current_pos[0],current_pos[1],current_pos[2],current_pos[3],current_pos[4],current_pos[5]);
-
+/*
     // base on target pose, choose used axis number
     if (target_pos[3] == 0 && target_pos[4] == 0 && target_pos[5] == 0){ 
         srv.request.mask = 7;
@@ -214,6 +214,7 @@ void task1(){
         ROS_INFO("Service called");
     else 
         ROS_ERROR("Failed");
+        */
 }
 
 void task2() {

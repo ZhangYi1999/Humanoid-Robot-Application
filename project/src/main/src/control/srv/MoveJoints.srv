@@ -1,7 +1,11 @@
 #CREATE request parameters
 int8 mode
 string[] names
+string[] second_names
+
 float32[] angles
+float32[] second_angles
+
 float32 max_speed
 float32[] time_second
 

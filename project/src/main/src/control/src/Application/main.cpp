@@ -49,7 +49,7 @@ enum class Task_State{
     Walking,
     Check_Ticket,
     Wait_Questions,
-    Pass_Count
+    New_Station
 };
 
 
@@ -89,6 +89,8 @@ private:
 
     //client for stoping speech recognition
     ros::ServiceClient recog_stop_srv;
+
+    ros::ServiceClient move_joint_client;
 
     // subscriber to speech recognition
     ros::Subscriber recog_sub;
@@ -165,13 +167,13 @@ public:
         // check_ticket_flag = false;
 
         // // task 3
-        // check_attention = false;
+        check_attention = false;
 
         // // task 4
-        // pass_num = 0; // in the init state, we assum that there is no one in the container
+        pass_num = 0; // in the init state, we assum that there is no one in the container
 
         // // task 5
-        // // current_station = Train_station::Hamburg;
+        //current_station = Train_station::Hamburg;
         std::cout<<"End Init."<<std::endl;
     }
 
@@ -280,17 +282,26 @@ public:
         // Ask the passenger for ticket
         say("Hello! You need a ticket to get on the train. Please show me your ticket.");
         //bring up the arm in mode 1
-        move_joint(1,"RArm","up");
+        move_joint("up");
         ros::Duration(3).sleep();
 
         // Wait the passenger to show ticket
         double begin = ros::Time::now().toSec();
         ros::Rate rate(10);
         bool over_time = false;
+        bool change_state = false;
         start_blink(0,0,1,"finding qr code");
         while(!over_time){
             // set waiting time limit
             if(ros::Time::now().toSec() - begin > 30){ 
+                move_joint("down");
+                over_time = true;
+                change_state = true;
+                stop_blink();
+            }
+            // wait until some one show the ticket
+            else if (ros::Time::now().toSec() - begin > 10){
+                move_joint("down");
                 over_time = true;
                 stop_blink();
             }
@@ -304,8 +315,13 @@ public:
         }
         stop_blink();
         ros::Duration(5).sleep();
-        if(over_time){
+        if(over_time && !change_state){
             say("I didn't see your ticket. Please try it again.");
+        }
+        else if (over_time && change_state){
+            // no one show the ticket, change the state
+            state = Task_State::Wait_Questions;
+            say("If you have any questions. Please ask.");
         }
         else{
             if(checker.checkValid()){
@@ -332,20 +348,22 @@ public:
                     //
                     if(checker.current_ticket.passenger_Name.compare(current_name)==0){
                         start_blink(0,1,0,"pass");
-                        move_joint(1,"RArm","down");
+                        move_joint("down");
+                        move_joint("agree");
                         say("Hello, "+current_name+". Welcome onboard.");
+                        pass_num ++;
+                        ros::Duration(1).sleep();
                     }
                     else{
                         start_blink(1,0,0,"not self ticket");
-                        move_joint(1,"LArm","deny");
-                        move_joint(1,"RArm","deny");
+                        move_joint("down");
+                        move_joint("deny");
                         say("Sorry, "+current_name+". The ticket is not yours.");
-                        ros::Duration(2).sleep();
+                        ros::Duration(3).sleep();
                     }
                 }
                 else{
                     start_blink(1,0,0,"none say");
-                    move_joint(1,"RArm","down");
                     say("I didn't hear you.");
                 }
                 ros::Duration(6).sleep();
@@ -355,10 +373,10 @@ public:
                 ros::Duration(2).sleep();
                 start_blink(1,0,0,"invalid qr code");
                 
-                move_joint(1,"LArm","deny");
-                move_joint(1,"RArm","deny");
+                move_joint("down");
+                move_joint("deny");
                 say("The ticket is invalid. You can not get on the train.");
-                ros::Duration(6).sleep();
+                ros::Duration(5).sleep();
                 stop_blink();
             }
 
@@ -368,33 +386,33 @@ public:
     }
 
 //////////////////////// task 3////////////////////////////////////////////////////////////
-//     void wait_questions(){
-//         if (check_attention){
-//             // wait for the questions from visitor by voice detection
-//             // provide explanation and motion
-//         }
-//         else {
-//             // wait for 5 seconds, if still cannot detect face, visitor may go away
-//             auto start_time = std::chrono::system_clock::now();
-//             std::chrono::seconds sec(5);
-//             bool detect_attention = false;
-//             while ((start_time - std::chrono::system_clock::now()) < sec)
-//                 if (check_attention){
-//                     detect_attention = true;
-//                     break;
-//                 }
-//         }
-//             // change mode
-//         if (!detect_attention)
-//             state = Task_State::Pass_Count;
-//     }   
+     void wait_questions(){
+        bool detect_attention = false;
+        if (check_attention){
+             // wait for the questions from visitor by voice detection
+             // provide explanation and motion
+        }
+        else {
+             // wait for 10 seconds, if still cannot detect face, visitor may go away
+            auto start_time = std::chrono::system_clock::now();
+            std::chrono::seconds sec(10);
+            while ((start_time - std::chrono::system_clock::now()) < sec)
+                if (check_attention){
+                    detect_attention = true;
+                    break;
+                }
+        }
+             // change mode
+        if (!detect_attention)
+            state = Task_State::New_Station;
+    }   
 
 // ///////////////////////////////// task 4 ////////////////////////////////////////////////////
 // // in this mode, passengers will leave or go in.
-//     void pass_count(){
-//         change_station();
-//         // current station has been changed, nao should do something means train station change
-//     }
+     void new_station(){
+         //change_station();
+         // current station has been changed, nao should do something means train station change
+     }
 
 // // container full, nao do something to let that one go away
 //     void container_full(){
@@ -402,18 +420,18 @@ public:
 //     }
 
 // // passenger wants to leave, should nao do something?
-//     void pass_leave(){
-//         pass_num --;
-//     }
+     void pass_leave(){
+         pass_num --;
+     }
 
 // /////////////////////////////////// task 5 /////////////////////////////////////////////////
 // // change train station
-//         // change train station
-//     void change_station(){
-//         int mid(static_cast<int>(current_station));
-//         mid++;
-//         current_station = static_cast<Train_station>(mid);
-//     }
+         // change train station
+/*      void change_station(){
+         int mid(static_cast<int>(current_station));
+         mid++;
+         current_station = static_cast<Train_station>(mid);
+     } */
 /*
     void wait(double duration){
         double begin = ros::Time::now().toSec();
@@ -424,10 +442,10 @@ public:
 */
     void say_welcome(){
         speech_content.goal_id.id = "Welcome";
-        speech_content.goal.say = "Hello, welcome to the central station. Here is the German Train " + checker.train.name + ". I am Ticket checker Nao.";
+        speech_content.goal.say = "Hello, welcome to the central station. Here is the German Train " + checker.train.name + ". I am Ticket checker Nao. please presse tacile to start";
         speech_pub.publish(speech_content);
         speech_content.goal.say="";
-        wros::Duration(2).sleep();
+        ros::Duration(2.5).sleep();
     }
 
     void say(std::string msg){
@@ -468,40 +486,55 @@ public:
 
     }
 
-    void move_joint(int mode, std::string names, std::string move){
-        srv.request.mode = mode;
-        srv.request.names = names;
+    void move_joint(std::string move){
+        srv.request.mode = 1;
+        //std::vector<std::string> joint_names;
+        //joint_names.push_back(names);
+        srv.request.names.clear();
+        srv.request.second_names.clear();
+        srv.request.angles.clear();
+        srv.request.second_angles.clear();
+        srv.request.time_second.clear();
         srv.request.mask = 7;
         srv.request.max_speed = 1.0;
         if (move == "down"){
-            // put down the arm
-            srv.request.target.linear.x = 0.0256733987480402;
-            srv.request.target.linear.y = -0.1004754900932312;
-            srv.request.target.linear.z = -0.11672674119472504;
-            srv.request.target.angular.x = 1.6395059823989868;
-            srv.request.target.angular.y = 1.4415910243988037;
-            srv.request.target.angular.z = 0.1265692412853241;
+            // put down
+            srv.request.names.push_back("RArm");
+            srv.request.target.linear.x = 0.032504;
+            srv.request.target.linear.y = -0.114791;
+            srv.request.target.linear.z = -0.113816;
+            srv.request.target.angular.x = 1.465496;
+            srv.request.target.angular.y = 1.465496;
+            srv.request.target.angular.z = 1.465496;
         }
         else if (move == "up"){
-
+            // raise arm
+            srv.request.names.push_back("RArm");
+            srv.request.target.linear.x = 0.174998;
+            srv.request.target.linear.y = -0.037849;
+            srv.request.target.linear.z = 0.047863;
+            srv.request.target.angular.x = 3.051657;
+            srv.request.target.angular.y = 3.051657;
+            srv.request.target.angular.z = 3.051657;
         }
         
         else if (move == "deny"){
-
+            // shake head
+            srv.request.mode = 2;
+            srv.request.names.push_back("HeadYaw");
+            srv.request.angles.push_back(30);
+            srv.request.second_angles.push_back(-30); 
+            srv.request.time_second.push_back(0.7);      
+            srv.request.max_speed = 0.1;
         }
 
         else if (move == "agree"){
             // nod
-            vector<string> jointnames;
-            jointnames.push_back("HeadYaw");
-            jointnames.push_back("HeadPitch");
-            vector<double> time_second;
-            time_second.push_back(0.5);
-            srv.request.names = jointnames;
-            srv.request.angles.push_back(0);
-            srv.request.angles.push_back(10);      
-            srv.request.time_second.push_back(0.1); 
-            srv.request.time_second.push_back(0.1);      
+            srv.request.mode = 3;
+            srv.request.names.push_back("HeadPitch");
+            srv.request.angles.push_back(10);
+            srv.request.second_angles.push_back(0); 
+            srv.request.time_second.push_back(0.5);      
             srv.request.max_speed = 0.1;
         }
 
@@ -526,16 +559,16 @@ public:
                     break;
                 case Task_State::Check_Ticket:
                     checkTicket();
-                    state = Task_State::Stand_By;
                     break;
                 // task 3
                 case Task_State::Wait_Questions:
                     // wait for the questions use voice recognition
-                    // wait_questions();
+                    wait_questions();
                     break;
                 // task 4&5, passenger count mode, in this mode we need to count the number of passenger
                 // and change the train station
-                case Task_State::Pass_Count:
+                case Task_State::New_Station:
+                    new_station();
                     // pass_count();
                     break;
             }

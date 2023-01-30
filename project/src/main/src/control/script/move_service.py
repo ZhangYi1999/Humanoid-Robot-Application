@@ -16,19 +16,44 @@ def handle_move_joints(req):
     names = req.names
     frame = motion.FRAME_TORSO
     useSensorValues = False
-
+    motionProxy.setStiffnesses("Body" ,1.0)
+    motionProxy.wakeUp()
     #angles = req.angles
     #fractionMaxSpeed = req.max_speed
     #timeLists = req.time_second
 
     # bring up the arm, in mode 1
     if (req.mode == 1):
-        motionProxy.setStiffnesses("Body" ,1.0)
-        motionProxy.wakeUp()
         # nao should bring up or down arm
         target = [req.target.linear.x,req.target.linear.y,req.target.linear.z,req.target.angular.x,req.target.angular.y,req.target.angular.z]
         motionProxy.setPositions(names, frame, target, req.max_speed, req.mask)
         #motionProxy.setAngles(names,angles,fractionMaxSpeed)
+    
+    # deny
+    elif (req.mode == 2):
+        time = req.time_second
+        angles = req.angles
+        second_angles = req.second_angles
+        isAbsolute = True
+        motionProxy.angleInterpolation(names,angles,time,isAbsolute)
+        time.sleep(0.7)
+        motionProxy.angleInterpolation(names,second_angles,1.4,isAbsolute)
+        time.sleep(1.4)
+        motionProxy.angleInterpolation(names,0,time,isAbsolute)
+        time.sleep(0.7)
+
+    # agree
+    elif (req.mode == 3):
+        time = req.time_second
+        second_names = req.second_names
+        angles = req.angles
+        second_angles = req.second_angles
+        isAbsolute = True
+        motionProxy.angleInterpolation(names,angles,time,isAbsolute)
+        time.sleep(0.5)
+        motionProxy.angleInterpolation(names,second_angles,time,isAbsolute)
+        time.sleep(0.5)
+    
 
     return True
 '''    
