@@ -15,4 +15,4 @@ geometry_msgs/Twist target
 bool flag
 --------------------------------
 #CREATE response parameters
-geometry_msgs/Twist current
+bool flag

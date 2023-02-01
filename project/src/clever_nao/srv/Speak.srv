@@ -1,0 +1,7 @@
+#CREATE request parameters
+bool with_motion
+string motion_name
+string message
+--------------------------------
+#CREATE response parameters
+bool done
