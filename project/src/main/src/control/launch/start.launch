@@ -8,14 +8,17 @@
   <arg name="nao_ip" default="$(optenv NAO_IP 10.152.246.59)" />
   <arg name="nao_port" default="$(optenv NAO_PORT 9559)" />
 
-  <node pkg="control" type="control" name="control" output="screen"/>
 
-  <node pkg="control" type="move_service.py" name="move_service" required="true" args="$(arg nao_ip) $(arg nao_port)" output="screen"/>
+  <!--<node pkg="control" type="move_service.py" name="move_service" required="true" args="$(arg nao_ip) $(arg nao_port)" output="screen"/> -->
+  <node pkg="control" type="speak_server.py" name="speak_service" required="true" args="$(arg nao_ip) $(arg nao_port)" output="screen"/> 
+  <node pkg="control" type="speech_server.py" name="speech_service" required="true" args="$(arg nao_ip) $(arg nao_port)" output="screen"/> 
 
   <rosparam file="$(find control)/launch/configs/data.yaml" command="load"/>
 
   <include file="$(find nao_apps)/launch/speech.launch"/>
   <include file="$(find nao_apps)/launch/tactile.launch"/>
   <include file="$(find nao_apps)/launch/leds.launch"/>
+
+  <node pkg="control" type="control" name="control" output="screen"/>
 
 </launch>

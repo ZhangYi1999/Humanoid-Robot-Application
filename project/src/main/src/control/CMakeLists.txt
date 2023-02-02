@@ -22,6 +22,8 @@ add_service_files(
     DIRECTORY srv
     FILES
     MoveJoints.srv
+    Speak.srv
+    Speech.srv
 )
 
 generate_messages(DEPENDENCIES std_msgs sensor_msgs geometry_msgs)
@@ -39,6 +41,11 @@ catkin_package(CATKIN_DEPENDS message_runtime)
 catkin_install_python(PROGRAMS ./script/move_service.py
     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
+
+catkin_install_python(PROGRAMS ./script/speak_server.py
+    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
 
 
 add_executable(control src/Application/main.cpp)
