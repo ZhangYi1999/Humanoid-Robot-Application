@@ -18,6 +18,7 @@
 #include <cv_bridge/cv_bridge.h>
 #include <tf/transform_broadcaster.h>
 #include <std_srvs/Empty.h>
+#include <std_msgs/Int8MultiArray.h>
 //#include "control/MoveJoints.h"
 #include "control/Speak.h"
 #include "control/Speech.h"
@@ -117,7 +118,11 @@ private:
     std::string current_name;
     bool heard_name;
 
-    
+    // subscribe the detected faces
+    ros::Subscriber detected_face_sub;
+
+    // vector to save current faces in the picture, 4 int arrays. element 1 for yinglei, 2 for yi, 3 for tao, 4 for chongyu
+    std::vector<int8_t> current_faces;
 
     // // task 2
     bool check_ticket_flag; // means robot is already in check ticket mode
@@ -126,12 +131,10 @@ private:
     // // used for the 3. task
     bool check_attention;
 
+    bool tactile_flag;
+
     // // used for the 4. task
     int pass_num;
-
-    // // used for 5. task
-    Train_station current_station;
-
 
 public:
     Nao_control() : it_(nh_)
@@ -140,6 +143,8 @@ public:
 
         top_camera_sub= it_.subscribe("/nao_robot/camera/top/camera/image_raw", 1, &Nao_control::top_camera_Callback, this);
         bot_camera_sub= it_.subscribe("/nao_robot/camera/bottom/camera/image_raw", 1, &Nao_control::bottom_camera_Callback, this);
+
+        detected_face_sub = nh_.subscribe("/detected_face",1, &Nao_control::detect_face_Callback, this);
         
         tactile_sub = nh_.subscribe("/tactile_touch",1, &Nao_control::tactileCallback, this);
 
@@ -153,7 +158,6 @@ public:
 
         speech_client = nh_.serviceClient<control::Speech>("speech_service");
 
-		recog_sub=nh_.subscribe("/word_recognized",1, &Nao_control::speechRecognitionCB, this);
 
         eye_led_pub = nh_.advertise<naoqi_bridge_msgs::BlinkActionGoal>("/blink/goal", 1);
 
@@ -166,11 +170,14 @@ public:
         speak_client = nh_.serviceClient<control::Speak>("speak_service");
 
         checker.load_data(nh_);
+
         welcome_once = true;
         heard_name = false;
 
         topimg_updated = false;
         bottomimg_updated = false;
+
+        tactile_flag = false;
 
         // Init name recognition
         
@@ -183,7 +190,7 @@ public:
         // check_ticket_flag = false;
 
         // // task 3
-        check_attention = false;
+        check_attention = true;
 
         // // task 4
         pass_num = 0; // in the init state, we assum that there is no one in the container
@@ -233,70 +240,83 @@ public:
         cv::waitKey(3);
     }
 
-
-// //////////////////////////////////////////////// task 2 ///////////////////////////////////////////////////////
-            // // detected QR code, change the state from standby to check ticket
-            // if((state == Task_State::Stand_By || state == Task_State::Check_Ticket) && (pass_num < 3) && checker.checkQRcode(current_image)){
-            //     if (!check_ticket_flag) {
-            //         state = Task_State::Check_Ticket; // avoid nao always change mode
-            //         check_ticket_flag = true;
-            //     }
-            //     checkTicket(current_station);
-            // }
-
-            // // frame of face recognition will also come from camera, so the followed line should be wrote about face detection condition
-            // else if (state == Task_State::Check_Ticket && (pass_num < 3) && checker.check_face(current_image)){
-            //     // find face , nao do something
-
-            //     //checker.get_check_face_flag = true;
-            // }
-
-            // // container is full, but someone wants go in 
-            // else if (state == Task_State::Check_Ticket && pass_num >= 3 && 
-            //         (checker.check_face(current_image) || checker.checkQRcode(current_image))){
-            //             // nao do something to tell that one go away
-            //             container_full();
-            // }
-
-            // ///////////////////////////////////////////////// task 3  /////////////////////////////////////////////////////////
-            // else if (state == Task_State::Wait_Questions){
-            //     check_attention = checker.check_attation(current_image);
-            // }
-
-            // ///////////////////////////////////////////////// task 4 //////////////////////////////////////////////////7
-            // // someone wants to leave, show nao QR code
-            // else if (state == Task_State::Pass_Count && checker.checkQRcode(current_image)){
-            //     pass_leave();
-            // }
-            // // someone wants go in, so he shows his face, change mode
-            // else if (state == Task_State::Pass_Count && checker.check_face(current_image)){
-            //     state = Task_State::Check_Ticket;
-            // }
     void tactileCallback(const naoqi_bridge_msgs::HeadTouch::ConstPtr& tactileState){
         
 
         if (tactileState->button==tactileState->buttonMiddle)
         {
             if (tactileState->state == tactileState->statePressed){
-                state = Task_State::Check_Ticket;
+                tactile_flag = true;
             }
         }
 
     }
 
-    void speechRecognitionCB(const naoqi_bridge_msgs::WordRecognized::ConstPtr& msg)
-	{
-        if(msg->words.size()>0){
-            current_name = msg->words[0];
-            heard_name = true;
+    void detect_face_Callback(const std_msgs::Int8MultiArrayConstPtr& msg) {
+        current_faces = msg->data;
+    }
+
+    bool check_face(std::string ticket_name) {
+        if (ticket_name.compare("Mike")) {
+            if (current_faces[0]) {
+                return true;
+            }
+            else {
+                return false;
+            }
         }
-	}
+        else if (ticket_name.compare("Jack")) {
+            if (current_faces[1]) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        else if (ticket_name.compare("Tom")) {
+            if (current_faces[2]) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        else if (ticket_name.compare("Amy")) {
+            if (current_faces[4]) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+    }
+
+
 
 /////////////////////////////////////////////////////////// task 2 ////////////////////////////////////////
+    void waitforticket(){
+        double start = ros::Time::now().toSec();
+        ros::Rate rate2(10);
+        while(ros::Time::now().toSec() - start < 30){
+            if(tactile_flag){
+                tactile_flag = false;
+                checkTicket();
+                start = ros::Time::now().toSec();
+            }
+            ros::spinOnce();
+            rate2.sleep();
+        }
+    }
+
+
     // check ticket valid
     void checkTicket(){
+        if(pass_num >= 3){
+            say("The container is full, please go to another one.", true, "deny");
+            return;
+        }
         // Ask the passenger for ticket
-        say("Hello! You need a ticket to get on the train. Please show me your ticket.",\
+        say("Hello! You need a ticket to get on or get off the train. Please show me your ticket.",\
         false,\
         "");
 
@@ -304,21 +324,11 @@ public:
         double begin = ros::Time::now().toSec();
         ros::Rate rate(10);
         bool over_time = false;
-        bool change_state = false;
         start_blink(0,0,1,"finding qr code");
         while(!over_time){
             // set waiting time limit
-            if(ros::Time::now().toSec() - begin > 30){ 
-                //move_joint("down");
+            if(ros::Time::now().toSec() - begin > 20){ 
                 over_time = true;
-                change_state = true;
-                stop_blink();
-            }
-            // wait until some one show the ticket
-            else if (ros::Time::now().toSec() - begin > 10){
-                //move_joint("down");
-                over_time = true;
-                stop_blink();
             }
             if(bottomimg_updated) {
                 if(checker.checkQRcode(bottom_current_image)) {
@@ -330,67 +340,55 @@ public:
         }
         stop_blink();
 
-        if(over_time && !change_state){
+        if(over_time){
             say("I didn't see your ticket. Please try it again.",true,"deny");
-        }
-        else if (over_time && change_state){
-            // no one show the ticket, change the state
-            state = Task_State::Wait_Questions;
-            //move_joint("wait");
         }
         else{
             if(checker.checkValid()){
-                say("What's your name?",false,"");
-
-                voc_params_pub.publish(voc_param);
-                std_srvs::Empty emp1;
-                recog_start_srv.call(emp1);
-
-                double t = ros::Time::now().toSec();
-                while(ros::Time::now().toSec() - t < 10 && !heard_name)
-                {
-                    ros::spinOnce();
-                }
-                std_srvs::Empty emp2;
-                recog_stop_srv.call(emp2);
-
-                if(heard_name){
-                    heard_name = false;
-                    // face recognition
-
-                    //
-                    if(checker.current_ticket.passenger_Name.compare(current_name)==0){
-                        start_blink(0,1,0,"pass");
-                        //move_joint("down");
-                        //move_joint("agree");
-                        say("Hello, "+current_name+". Welcome onboard.",true,"agree");
-                        pass_num ++;
-                    }
-                    else{
-                        start_blink(1,0,0,"not self ticket");
-                        //move_joint("down");
-                        //move_joint("deny");
-                        say("Sorry, "+current_name+". The ticket is not yours.",true,"deny");
-                    }
+                if (checker.current_ticket.used!=0){
+                    say("See you. Wish you have a pleasant journey.",true,"deny");
+                    pass_num--;
+                    return;
                 }
                 else{
-                    start_blink(1,0,0,"none say");
-                    say("I didn't hear you.",true,"deny");
-                }
-                stop_blink();
+                    say("What's your name?",false,"");
+                    speech_srv.request.mode = 2;
+                    if (speech_client.call(speech_srv)) 
+                        ROS_INFO("Speech Recognition Service called");
+                    else 
+                        ROS_ERROR("Speech Recognition Service Failed");
+
+                    current_name = speech_srv.response.name;
+                    std::cout << check_face(current_name);
+                    std::cout << current_name << std::endl;
+                    std::cout << checker.current_ticket.passenger_Name << std::endl;
+                    
+                    if(current_name.compare("None")!=0){
+                        if(checker.current_ticket.passenger_Name.compare(current_name)==0 && check_face(current_name)){
+                            start_blink(0,1,0,"pass");
+                            say("Hello, "+current_name+". Welcome onboard. Wish you have a pleasant journey.",true,"up");
+                            checker.current_ticket.used = 1;
+                            pass_num ++;
+                        }
+                        else{
+                            start_blink(1,0,0,"not self ticket");
+                            say("Sorry, "+current_name+". The ticket is not yours. You can not get in the train.",true,"deny");
+                        }
+                        
+                    }
+                    else{
+                        start_blink(1,0,0,"none say");
+                        say("I didn't hear you.",true,"deny");
+                    }
+                    stop_blink();
+                }      
             }
             else{
                 start_blink(1,0,0,"invalid qr code");
-                
-                //move_joint("down");
-                //move_joint("deny");
                 say("The ticket is invalid. You can not get on the train.",true,"deny");
                 stop_blink();
-            }
-
-            
+            }            
         }
-        //state = Task_State::Stand_By;
     }
 
 //////////////////////// task 3////////////////////////////////////////////////////////////
@@ -399,13 +397,12 @@ public:
         if (check_attention){
             // wait for the questions from visitor by voice detection
             // provide explanation and motion
-            say("If you have any questions. Please ask.",true,"Sit");
-            speech_srv.request.start = true;
+            say("If you have any questions. Please ask.",true,"stand");
+            speech_srv.request.mode = 1;
             if (speech_client.call(speech_srv)) 
                 ROS_INFO("Service called");
             else 
                 ROS_ERROR("Failed");
-            wait(4);// not sure while it ran the service, the main progress will continue or not
             answer_questions(speech_srv.response.question);
         }
         else {
@@ -425,44 +422,45 @@ public:
 
     void answer_questions(std::string question){
         if (question == "When"){
-
+            // when: when will arrive hamburg
+            say("about three o'clock",true,"");
         }
         else if (question == "Long"){
-
+            // long: how long will it take from current station to hamburg
+            // checker.train.current_station_id
         }
         else if (question == "Many"){
-
+            // many: how many stations still have
+            int station_num = 4 - checker.train.current_station_id;
+            std::string temp_str;
+            if (station_num == 0) say("Next station is Hamburg",true,"up");
+            else temp_str = "still have " + std::to_string(station_num) + " stations until Hamburg";
+            say(temp_str, true, "up");
         }
         else if (question == "no"){
             say("I did not hear your questions", true, "up");
         }
     }   
 
-// ///////////////////////////////// task 4 ////////////////////////////////////////////////////
+// ///////////////////////////////// task 4 and 5////////////////////////////////////////////////////
 // // in this mode, passengers will leave or go in.
      void new_station(){
-         //change_station();
-         // current station has been changed, nao should do something means train station change
+        if (checker.train.moveToNextStation()){
+            say("",true,"");
+        }
+        else {
+            say(checker.train.getCurrentStation().Name+" arrived",true,"Stand");
+            pass_leave();
+        }
      }
 
-// // container full, nao do something to let that one go away
-//     void container_full(){
+    void pass_leave(){
+        pass_num --;
+    }
 
-//     }
+     void check_current_tickets(){
 
-// // passenger wants to leave, should nao do something?
-     void pass_leave(){
-         pass_num --;
      }
-
-// /////////////////////////////////// task 5 /////////////////////////////////////////////////
-// // change train station
-         // change train station
-/*      void change_station(){
-         int mid(static_cast<int>(current_station));
-         mid++;
-         current_station = static_cast<Train_station>(mid);
-     } */
 
     void wait(double duration){
         double begin = ros::Time::now().toSec();
@@ -472,9 +470,19 @@ public:
     }
 
     void say_welcome(){
-        say("Hello, welcome to the central station. Here is the German Train " \
-        + checker.train.name + ". I am Ticket checker Nao. please presse tacile to start",\
-        false,"");
+        control::Speak speak_srv;
+        
+        // speak_srv.request.message = "Hello, welcome to the central station. Here is the German Train " \
+        // + checker.train.name + ". I am Ticket checker Nao. please presse tacile to start";
+        speak_srv.request.message = "Welcome";
+        speak_srv.request.with_motion = false;
+        speak_srv.request.motion_name = "";
+
+        ros::Rate rate(10);
+        while(!speak_client.call(speak_srv)){
+            rate.sleep();
+            ros::spinOnce();
+        }
     }
 
     void say(std::string msg,bool with_motion,std::string motion){
@@ -519,73 +527,7 @@ public:
 		eye_led_cancel_pub.publish(blink_cancel);
 
     }
-/* 
-    void move_joint(std::string move){
-        srv.request.mode = 1;
-        //std::vector<std::string> joint_names;
-        //joint_names.push_back(names);
-        srv.request.motion_name.clear();
-        srv.request.second_names.clear();
-        srv.request.angles.clear();
-        srv.request.second_angles.clear();
-        srv.request.time_second.clear();
-        srv.request.mask = 7;
-        srv.request.max_speed = 1.0;
-        if (move == "down"){
-            // put down
-            srv.request.motion_name.push_back("RArm");
-            srv.request.target.linear.x = 0.032504;
-            srv.request.target.linear.y = -0.114791;
-            srv.request.target.linear.z = -0.113816;
-            srv.request.target.angular.x = 1.465496;
-            srv.request.target.angular.y = 1.465496;
-            srv.request.target.angular.z = 1.465496;
-        }
-        else if (move == "up"){
-            // raise arm
-            srv.request.motion_name.push_back("RArm");
-            srv.request.target.linear.x = 0.174998;
-            srv.request.target.linear.y = -0.037849;
-            srv.request.target.linear.z = 0.047863;
-            srv.request.target.angular.x = 3.051657;
-            srv.request.target.angular.y = 3.051657;
-            srv.request.target.angular.z = 3.051657;
-        }
-        
-        else if (move == "deny"){
-            // shake head
-            srv.request.mode = 2;
-            srv.request.motion_name.push_back("HeadYaw");
-            srv.request.angles.push_back(0.3);
-            srv.request.second_angles.push_back(-0.3); 
-            srv.request.time_second.push_back(0.3);      
-            srv.request.max_speed = 0.1;
-        }
 
-        else if (move == "agree"){
-            // nod
-            srv.request.mode = 3;
-            srv.request.motion_name.push_back("HeadPitch");
-            srv.request.angles.push_back(0.083);
-            srv.request.second_angles.push_back(0); 
-            srv.request.time_second.push_back(0.2);      
-            srv.request.max_speed = 0.1;
-        }
-
-        else if (move == "wait"){
-            srv.request.mode = 4;
-        }
-
-        else if (move == "stand"){
-            srv.request.mode = 5;
-        }
-
-        if (move_joint_client.call(srv)) 
-            ROS_INFO("Service called");
-        else 
-            ROS_ERROR("Failed");
-    }
- */
 //////////////////////////////////////////// mode switching ////////////////////////////////////////////
     void Mode_Switching_loop()
     {
@@ -593,21 +535,25 @@ public:
         ros::Rate rate(10);
 
         say_welcome();
+
+        state = Task_State::Check_Ticket;
         
         while(ros::ok()){
             switch(state){
-                case Task_State::Not_Start_Yet:
+                /* case Task_State::Not_Start_Yet:
                     ROS_INFO("Welcome now");
                     say_welcome();
                     state = Task_State::Stand_By;
                     // state = Task_State::Check_Ticket;
-                    break;
+                    break; */
                 case Task_State::Check_Ticket:
-                    checkTicket();
+                    waitforticket();
+                    state = Task_State::Wait_Questions;
                     break;
                 // task 3
                 case Task_State::Wait_Questions:
                     // wait for the questions use voice recognition
+                    // ROS_INFO("Wait for question.");
                     wait_questions();
                     break;
                 // task 4&5, passenger count mode, in this mode we need to count the number of passenger
