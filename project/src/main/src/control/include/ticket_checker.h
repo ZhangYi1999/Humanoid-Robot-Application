@@ -67,6 +67,8 @@ public:
     std::string destination_station;
     Time arrival_time;
     std::string train_name;
+    int ticket_id;
+    int used; // check ticket if used
 
     // blank constructor
     Ticket(){}
@@ -85,7 +87,6 @@ public:
     cv::QRCodeDetector detector;
     std::string message;
     std::vector<Ticket> tickets;
-    std::vector<int> ticket_checked; // used for count the passagers, so they never use the ticket twice
     int ticket_num;
 
     Ticket current_ticket;
@@ -102,7 +103,7 @@ public:
     bool checkQRcode(cv::Mat img); // check if there is valid QR code in the img
     bool checkValid(); // check if the ticket is vaild
     bool check_face(); // check if there is face in the img
-    bool check_attention(cv::Mat img); // check if there is passenger looking at the camera
+    //bool check_attention(cv::Mat img); // check if there is passenger looking at the camera
     Ticket getFullTicketfromMsg(std::string msg);
 
     bool get_check_face_flag(){return check_face_flag;};

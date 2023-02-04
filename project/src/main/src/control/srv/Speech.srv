@@ -1,5 +1,6 @@
 #CREATE request parameters
-bool start
+uint8 mode
 --------------------------------
 #CREATE response parameters
 string question
+string name

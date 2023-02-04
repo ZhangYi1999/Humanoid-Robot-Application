@@ -38,7 +38,7 @@ catkin_package(CATKIN_DEPENDS message_runtime)
 
 
 #make python file executable
-catkin_install_python(PROGRAMS ./script/move_service.py
+catkin_install_python(PROGRAMS ./script/speech_server.py
     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

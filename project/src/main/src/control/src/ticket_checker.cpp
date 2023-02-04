@@ -212,6 +212,9 @@ void TicketChecker::load_data(ros::NodeHandle nh_){
     for(int i = 0; i < this->ticket_num; i++){
         Ticket temp_ticket;
 
+        temp_ticket.used = 0;
+
+        temp_ticket.ticket_id = i;
         s.str("");
         s<<"/ticket_"<<i+1<<"/ID";
         nh_.getParam(s.str(),temp_ticket.id);
@@ -252,7 +255,6 @@ void TicketChecker::load_data(ros::NodeHandle nh_){
         nh_.getParam(s.str(),temp_ticket.train_name);
 
         this->tickets.push_back(temp_ticket);  
-        this->ticket_checked.push_back(0); 
     }
 
     this->found_qr_code_flag = false;
@@ -296,8 +298,10 @@ bool TicketChecker::checkValid(){
 
             Train_station a = this->train.getStationByName(this->current_ticket.departure_station);
             if(!station_compare(a,this->train.getCurrentStation())){
-                std::cout<<"wrong station "<<std::endl;
-                return false;
+                if(this->train.stationDirection(this->current_ticket.departure_station)<0)
+                    return true;
+                else
+                    return false;
             }
             else{
                 return true;
@@ -326,15 +330,18 @@ bool TicketChecker::check_face(){
     return true;
 }
 
-bool TicketChecker::check_attention(cv::Mat img){
+/* bool TicketChecker::check_attention(cv::Mat img){
     // if face detection can detect a face, return true
     return true;
-}
+} */
 
 Ticket TicketChecker::getFullTicketfromMsg(std::string msg){
     for(int i = 0; i < this->ticket_num; i++){
-        if(this->tickets[i].id.compare(msg)==0)
+        if(this->tickets[i].id.compare(msg)==0){
+            
             return this->tickets[i];
+        }
+            
     }
 }
 
