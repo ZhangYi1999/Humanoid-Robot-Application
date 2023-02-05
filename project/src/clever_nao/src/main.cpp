@@ -1,7 +1,5 @@
 // C++ include
 #include <iostream>
-#include <fstream>
-#include <iomanip>
 #include <vector>
 #include <cstdlib>
 #include <cmath>
@@ -18,7 +16,10 @@
 #include <cv_bridge/cv_bridge.h>
 #include <tf/transform_broadcaster.h>
 #include <std_srvs/Empty.h>
-#include "control/MoveJoints.h"
+
+// custom service include
+#include "clever_nao/MoveJoints.h"
+#include "clever_nao/Speak.h"
 
 // Nao include
 #include <naoqi_bridge_msgs/HeadTouch.h>
@@ -29,9 +30,6 @@
 #include <naoqi_bridge_msgs/WordRecognized.h>
 
 // OpenCV include
-#include <highgui.h>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/highgui/highgui.hpp>
 #include <opencv2/opencv.hpp>
 #include <sensor_msgs/image_encodings.h>
 #include <sensor_msgs/Image.h>

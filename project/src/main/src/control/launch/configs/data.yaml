@@ -43,7 +43,7 @@ ticket_2:
   ID: NAO2302
   Name: Mike
   Date: 07.02.2023
-  From: Munich
+  From: Ingolstadt
   DepartureTime: 9-00
   To: Hamburg
   ArrivalTime: 15-00
@@ -53,7 +53,7 @@ ticket_3:
   ID: NAO2303
   Name: Amy
   Date: 07.02.2023
-  From: Munich
+  From: Fulda
   DepartureTime: 9-00
   To: Hamburg
   ArrivalTime: 15-00
