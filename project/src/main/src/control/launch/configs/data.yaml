@@ -35,8 +35,8 @@ ticket_1:
   Date: 07.02.2023
   From: Munich
   DepartureTime: 9-00
-  To: Hamburg
-  ArrivalTime: 15-00
+  To: Hannover
+  ArrivalTime: 13-15
   Train: I C E 6 8 0
 
 ticket_2:
