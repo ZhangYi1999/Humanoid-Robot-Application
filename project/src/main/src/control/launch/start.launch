@@ -15,7 +15,7 @@
 
   <rosparam file="$(find control)/launch/configs/data.yaml" command="load"/>
 
-  <include file="$(find nao_apps)/launch/speech.launch"/>
+  <!-- <include file="$(find nao_apps)/launch/speech.launch"/> -->
   <include file="$(find nao_apps)/launch/tactile.launch"/>
   <include file="$(find nao_apps)/launch/leds.launch"/>
 
