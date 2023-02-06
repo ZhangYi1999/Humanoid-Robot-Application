@@ -21,7 +21,6 @@ find_package(OpenCV REQUIRED)
 add_service_files(
     DIRECTORY srv
     FILES
-    MoveJoints.srv
     Speak.srv
     Speech.srv
 )
