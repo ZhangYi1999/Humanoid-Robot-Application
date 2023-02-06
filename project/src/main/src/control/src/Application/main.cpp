@@ -235,7 +235,7 @@ public:
             }
         }
     }
-
+    // used for face recognition, check which face current are front of camera
     void detect_face_Callback(const std_msgs::Int8MultiArrayConstPtr &msg)
     {
         current_faces[0] = msg->data[0];
@@ -251,7 +251,7 @@ public:
             check_attention = false;
         }
     }
-
+    // check if detected face has the same name as the name on ticket
     bool check_face(std::string ticket_name)
     {
         if (ticket_name.compare("Mike") == 0)
@@ -301,6 +301,7 @@ public:
     }
 
     /////////////////////////////////////////////////////////// task 2 ////////////////////////////////////////
+    // nao wait 10 secs, if someone pressed tactile, interrupt
     void waitforticket()
     {
         say("start checking ticket", false, "");
@@ -359,10 +360,10 @@ public:
             say("Sorry, I didn't see your ticket. Please try it again.", true, "deny");
         }
         else
-        {
+        {       // check if the QR code on ticket is valid
             if (checker.checkValid())
             {
-
+                // someone wants to leave
                 if (checker.current_ticket.used == 1)
                 {
                     say("See you. Wish you have a pleasant journey.", true, "up");
@@ -370,18 +371,20 @@ public:
                     pass_num--;
                     return;
                 }
+                // someone's ticket has already used
                 else if (checker.current_ticket.used == 2)
                 {
                     say("Sorry, the ticket has already been used.", true, "deny");
                     return;
                 }
                 else
-                {
+                {   // the container alread full, ask passenger to another one
                     if (pass_num >= 2)
                     {
                         say("The container is full, please go to another one.", true, "deny");
                         return;
                     }
+                    // the name from passenger voice and ticket
                     say("What's your name?", false, "");
                     speech_srv.request.mode = 2;
                     if (speech_client.call(speech_srv))
@@ -390,7 +393,7 @@ public:
                         ROS_ERROR("Speech Recognition Service Failed");
 
                     current_name = speech_srv.response.name;
-
+                    
                     if (current_name.compare("None") != 0)
                     {
 
@@ -526,11 +529,12 @@ public:
     {
         pass_num--;
     }
-
+/*
     void check_current_tickets()
     {
     }
-
+*/
+    // wait function and the same time ros::spin would not stop
     void wait(double duration)
     {
         double begin = ros::Time::now().toSec();
@@ -539,7 +543,7 @@ public:
             ros::spinOnce();
         }
     }
-
+    // self defined welcome speech
     void say_welcome()
     {
         control::Speak speak_srv;
