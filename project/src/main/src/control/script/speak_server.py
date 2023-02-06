@@ -16,22 +16,28 @@ def service(req):
     if req.with_motion:
         isAbsolute = True
 
+        # this predefined motion, input will be the motion name and
+        # the word, that want nao to talk, return true if the process success
+        # shake head
         if req.motion_name == "deny":
             names      = "HeadYaw"
             angleLists = [20.0*almath.TO_RAD, -20.0*almath.TO_RAD, 0.0]
             timeLists  = [0.25, 0.75, 1.0]
             motionProxy.post.angleInterpolation(names, angleLists, timeLists, isAbsolute)
+        # nod head
         elif req.motion_name == "agree":
             names      = "HeadPitch"
             angleLists = [-10.0*almath.TO_RAD, 15.0*almath.TO_RAD, 0.0]
             timeLists  = [0.25, 0.75, 1.0]
             motionProxy.post.angleInterpolation(names, angleLists, timeLists, isAbsolute)
+        #bring up arm
         elif req.motion_name == "up":
             names      = "RArm"
             target     = [0.174998,-0.037849,0.047863,3.051657,3.051657,3.051657]
             max_speed  = 1.0
             mask       = 7
             motionProxy.post.setPositions(names,motion.FRAME_TORSO,target,max_speed,mask)
+        # put down arm
         elif req.motion_name == "down":
             names      = "RArm"
             target     = [0.032504,-0.114791,-0.113816,1.465496,1.465496,1.465496]
