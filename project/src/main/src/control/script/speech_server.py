@@ -10,7 +10,7 @@ memoryProxy = 0
 posProxy = 0
 
 name_list = ["Jack","Mike","Amy","Tom","John"]
-word_list = ["When","Many"]
+word_list = ["When","Many","North","South"]
 # when: when will arrive hamburg
 # long: how long will it take from current station to hamburg
 # many: how many stations still have

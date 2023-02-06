@@ -21,6 +21,7 @@
 #include <tf/transform_broadcaster.h>
 #include <std_srvs/Empty.h>
 #include <std_msgs/Int8MultiArray.h>
+#include <geometry_msgs/Pose2D.h>
 // #include "control/MoveJoints.h"
 #include "control/Speak.h"
 #include "control/Speech.h"
@@ -101,6 +102,11 @@ private:
     std::string current_name;
     bool heard_name;
 
+    // walk
+    ros::Publisher walk_pub;
+    ros::ServiceClient stop_walk_srv;
+    bool walking;
+
     // subscribe the detected faces
     ros::Subscriber detected_face_sub;
 
@@ -123,6 +129,10 @@ public:
     Nao_control() : it_(nh_)
     {
         state = Task_State::Not_Start_Yet;
+
+        walk_pub=nh_.advertise<geometry_msgs::Pose2D>("/cmd_pose", 1);
+		stop_walk_srv = nh_.serviceClient<std_srvs::Empty>("/stop_walk_srv");
+
 
         top_camera_sub = it_.subscribe("/nao_robot/camera/top/camera/image_raw", 1, &Nao_control::top_camera_Callback, this);
         bot_camera_sub = it_.subscribe("/nao_robot/camera/bottom/camera/image_raw", 1, &Nao_control::bottom_camera_Callback, this);
@@ -157,16 +167,8 @@ public:
         current_faces.push_back(0);
         current_faces.push_back(0);
 
-        // Init name recognition
-
-        voc_param.goal_id.id = "vocabulary";
-        for (int i = 0; i < checker.ticket_num; i++)
-        {
-            voc_param.goal.words.push_back(checker.tickets[i].passenger_Name);
-            std::cout << "Input Name " << checker.tickets[i].passenger_Name << " into vocabulary." << std::endl;
-        }
-
         // check_ticket_flag = false;
+        walking = false;
 
         // // task 3
         check_attention = true;
@@ -285,7 +287,7 @@ public:
                 return false;
             }
         }
-        else if (ticket_name.compare("Amy") == 0)
+        else if (ticket_name.compare("John") == 0)
         {
             if (current_faces[3])
             {
@@ -322,13 +324,9 @@ public:
     // check ticket valid
     void checkTicket()
     {
-        if (pass_num >= 3)
-        {
-            say("The container is full, please go to another one.", true, "deny");
-            return;
-        }
+        
         // Ask the passenger for ticket
-        say("Hello! You need a ticket to get on or get off the train. Please show me your ticket.",
+        say("Hello! This is ICE680. Nice to meet you. You need to show your ticket to get on or get off the train. Please show me your ticket.",
             false,
             "");
 
@@ -358,7 +356,7 @@ public:
 
         if (over_time)
         {
-            say("I didn't see your ticket. Please try it again.", true, "deny");
+            say("Sorry, I didn't see your ticket. Please try it again.", true, "deny");
         }
         else
         {
@@ -379,6 +377,11 @@ public:
                 }
                 else
                 {
+                    if (pass_num >= 2)
+                    {
+                        say("The container is full, please go to another one.", true, "deny");
+                        return;
+                    }
                     say("What's your name?", false, "");
                     speech_srv.request.mode = 2;
                     if (speech_client.call(speech_srv))
@@ -393,6 +396,7 @@ public:
 
                         if (checker.current_ticket.passenger_Name.compare(current_name) == 0)
                         {
+                            
                             if (check_face(current_name))
                             {
                                 start_blink(0, 1, 0, "pass");
@@ -469,20 +473,24 @@ public:
         }
     }
 
-    void answer_questions(std::string question)
-    {
-        if (question.compare("When") == 0)
-        {
+    void answer_questions(std::string question){
+        if (question.compare("When")==0){
             // when: when will arrive hamburg
-            say("It is about three o'clock", false, "up");
+            say("It is about three o'clock",false,"up");
         }
-        else if (question.compare("Long") == 0)
-        {
+        else if (question.compare("Long")==0){
             // long: how long will it take from current station to hamburg
             // checker.train.current_station_id
         }
-        else if (question.compare("Many") == 0)
-        {
+        else if (question.compare("North")==0){
+            // weather: how is the weather in hamburg
+            say("The weather in north germany is 2 degree celsius",false,"up");
+        }
+        else if (question.compare("South")==0){
+            // weather: how is the weather in hamburg
+            say("The weather in sorth germany is 1 degree celsius",false,"up");
+        }
+        else if (question.compare("Many")==0){
             // many: how many stations still have
             int station_num = 4 - checker.train.current_station_id;
             std::string temp_str;
@@ -492,9 +500,8 @@ public:
                 temp_str = "still have " + std::to_string(station_num) + " stations until Hamburg";
             say(temp_str, true, "up");
         }
-        else if (question.compare("no") == 0)
-        {
-            say("I did not hear your questions", true, "up");
+        else if (question.compare("no")==0){
+            say("Sorry, I can not understand your question, please try it again.", true, "up");
         }
     }
 
@@ -504,13 +511,15 @@ public:
     {
         if (checker.train.moveToNextStation())
         {
-            say("Final station hamburg is arrive.", true, "up");
+            say("The final station hamburg is now arrived. Don't forget to take your baggage. Goodbye!",true,"Sit");
+            state = Task_State::Stand_By;
         }
         else
         {
             say(checker.train.getCurrentStation().Name + " arrived", true, "Stand");
+            state = Task_State::Check_Ticket;
         }
-        state = Task_State::Check_Ticket;
+        
     }
 
     void pass_leave()
@@ -535,9 +544,9 @@ public:
     {
         control::Speak speak_srv;
 
-        // speak_srv.request.message = "Hello, welcome to the central station. Here is the German Train " \
-        // + checker.train.name + ". I am Ticket checker Nao. please presse tacile to start";
-        speak_srv.request.message = "Welcome";
+        speak_srv.request.message = "Hello, welcome to the central station. Here is the German Train " \
+        + checker.train.name + ". I am Ticket checker Nao.";
+        // speak_srv.request.message = "Hello, welcome to the central station. Here is the German Train "+ checker.train.name;
         speak_srv.request.with_motion = false;
         speak_srv.request.motion_name = "";
 
@@ -595,6 +604,50 @@ public:
 
         eye_led_cancel_pub.publish(blink_cancel);
     }
+    //////////////////////////////////////////// walk ////////////////////////////////////////////
+    void main_loop()
+	{
+		if (!walking){			
+            ROS_WARN_STREAM("Start walking!");
+            walking = true;			
+            walker(0.0,0.0,0);
+            wait(5);
+            walker(0.3,0.0,1.8);
+            wait(8);
+            
+        }
+        else{
+            ROS_WARN_STREAM("Stop walking!");
+            walker(0,0.0,-1.57);
+            walking = false;
+            stopWalk();
+	    }
+			
+    }
+
+    void walker(double x, double y, double theta)
+	{
+		/*
+		 * for WALKING
+		 */
+	    geometry_msgs::Pose2D Postion2D;
+    	Postion2D.x = x;
+    	Postion2D.y = y;
+    	Postion2D.theta = theta;
+    	walk_pub.publish(Postion2D);
+	}
+
+	void stopWalk()
+	{
+		/*
+		 * stop walking
+		 */
+		std_srvs::Empty empty_req;
+		stop_walk_srv.call(empty_req);
+      	
+	}
+
+
 
     //////////////////////////////////////////// mode switching ////////////////////////////////////////////
     void Mode_Switching_loop()
@@ -602,7 +655,10 @@ public:
         std::cout << "Start Loop." << std::endl;
         ros::Rate rate(10);
 
+        walking = false;
+        
         say_welcome();
+        // main_loop();
 
         state = Task_State::Check_Ticket;
 
@@ -632,6 +688,7 @@ public:
             ros::spinOnce();
             rate.sleep();
         }
+        main_loop();
     }
 };
 
