@@ -19,6 +19,8 @@ def service(req):
     
     question = "no"
     name = "None"
+    # mode 1 for answer the question, input will be the question from passenger
+    # and returnn the key word from question
     if req.mode == 1:
         speechRecogProxy.setVocabulary(word_list,False)
         speechRecogProxy.subscribe("hear question")
@@ -34,6 +36,9 @@ def service(req):
                 break
             rate.sleep()
         speechRecogProxy.unsubscribe("hear question")
+    
+    # mode 2 for check the name from passenger, input will be the name from passenger voise
+    # return name of passenger
     elif req.mode == 2:
         speechRecogProxy.setVocabulary(name_list,False)
         speechRecogProxy.subscribe("hear name")
