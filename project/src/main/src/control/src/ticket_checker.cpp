@@ -323,13 +323,6 @@ bool TicketChecker::checkValid(){
     }
 }
 
-// face detection prograss
-bool TicketChecker::check_face(){
-    // use face detection detect face from camera frame and compare it with "ticket_name"
-    // if they are the same, return true, 
-    return true;
-}
-
 /* bool TicketChecker::check_attention(cv::Mat img){
     // if face detection can detect a face, return true
     return true;
