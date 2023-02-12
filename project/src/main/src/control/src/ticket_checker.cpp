@@ -1,6 +1,6 @@
 #include<ticket_checker.h>
 
-//********** definition of self defined function **********//
+// definition of self defined function
 std::string str_split(std::string &input,char delim){
     // set the start and end point of sub string
     std::size_t previous = 0;
@@ -13,7 +13,7 @@ std::string str_split(std::string &input,char delim){
     return result;
 }
 
-//********** definition of functions of Date and Time **********//
+// definition of functions of Date and Time
 Date dateFromString(std::string date_str){
     // create a Date container
     Date result;
@@ -26,6 +26,7 @@ Date dateFromString(std::string date_str){
     return result;
 }
 
+// compare two dates
 bool date_compare(Date date1, Date date2){
     bool same_year = date1.year == date2.year; 
     bool same_month = date1.month == date2.month; 
@@ -34,6 +35,7 @@ bool date_compare(Date date1, Date date2){
     return same_year && same_month && same_day;
 }
 
+// get time from a string
 Time timeFromString(std::string time_str){
     // create a time container
     Time result;
@@ -45,6 +47,7 @@ Time timeFromString(std::string time_str){
     return result;
 }
 
+// compare two times
 bool time_compare(Time time1, Time time2){
     bool same_hour = time1.hour == time2.hour;
     bool same_min = time1.min == time2.min;
@@ -52,7 +55,7 @@ bool time_compare(Time time1, Time time2){
     return same_hour && same_min;
 }
 
-//********** definition of functions of Train Station **********//
+// definition of functions of Train Station
 bool station_compare(Train_station staion1,Train_station staion2){
     bool same_name = staion1.Name.compare(staion2.Name) == 0;
     bool same_date = date_compare(staion1.arrival_date,staion2.arrival_date);
@@ -60,7 +63,7 @@ bool station_compare(Train_station staion1,Train_station staion2){
     return same_name && same_date;
 }
 
-//********** definition of functions of class Train **********//
+// definition of functions of class Train
 std::string Train::getName(){
     return this->name;
 }

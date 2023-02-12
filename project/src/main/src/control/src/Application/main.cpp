@@ -1,3 +1,7 @@
+// This is main ROS node which will perform all the state machine work.
+// We built a Mode_Switching_loop as the main loop in ROS spin.
+// The state will switch between Not_Start_Yet, Stand_By, Check_Ticket, Wait_Questions, New_Station.
+
 // C++ include
 #include <iostream>
 #include <fstream>
@@ -22,7 +26,6 @@
 #include <std_srvs/Empty.h>
 #include <std_msgs/Int8MultiArray.h>
 #include <geometry_msgs/Pose2D.h>
-// #include "control/MoveJoints.h"
 #include "control/Speak.h"
 #include "control/Speech.h"
 #include "sensor_msgs/JointState.h"
@@ -131,7 +134,7 @@ public:
     Nao_control() : it_(nh_)
     {
         state = Task_State::Not_Start_Yet;
-        /// ROS service, publisher and subscriber initilize
+        /// ROS service, publisher and subscriber initialization
         walk_pub=nh_.advertise<geometry_msgs::Pose2D>("/cmd_pose", 1);
 		stop_walk_srv = nh_.serviceClient<std_srvs::Empty>("/stop_walk_srv");
 
@@ -158,11 +161,10 @@ public:
         // initilize bool type, used for later functions
         welcome_once = true;
         heard_name = false;
-
         topimg_updated = false;
         bottomimg_updated = false;
-
         tactile_flag = false;
+
         // store face information in vector
         current_faces.push_back(0);
         current_faces.push_back(0);
@@ -187,7 +189,8 @@ public:
     {
     }
 
-    // Image callback function is executed when a new image is received:
+    // Image callback function is executed when a new image is received
+    // input: pointer of sensor_msgs::Image, output: none
     void top_camera_Callback(const sensor_msgs::ImageConstPtr &msg)
     {
         cv_bridge::CvImageConstPtr cvImagePointer;
@@ -207,6 +210,8 @@ public:
         cv::waitKey(3);
     }
 
+    // Image callback function is executed when a new image is received
+    // input: pointer of sensor_msgs::Image, output: none
     void bottom_camera_Callback(const sensor_msgs::ImageConstPtr &msg)
     {
         cv_bridge::CvImageConstPtr cvImagePointer;
@@ -225,7 +230,9 @@ public:
         cv::imshow("bottom camera", bottom_current_image);
         cv::waitKey(3);
     }
-    // when someone press the tactile, change the bool type in order to get into check ticket state
+
+    // when someone press the tactile, change the bool type in order to go into check ticket state
+    // input: pointer of naoqi_bridge_msgs::HeadTouch, output:none
     void tactileCallback(const naoqi_bridge_msgs::HeadTouch::ConstPtr &tactileState)
     {
 
@@ -237,7 +244,9 @@ public:
             }
         }
     }
+
     // used for face recognition, check which face current are front of camera
+    // input: pointer of std_msgs::Int8MultiArray message, output:none
     void detect_face_Callback(const std_msgs::Int8MultiArrayConstPtr &msg)
     {
         current_faces[0] = msg->data[0];
@@ -253,7 +262,9 @@ public:
             check_attention = false;
         }
     }
+
     // check if detected face has the same name as the name on ticket
+    // input: name on the ticket, output: true or false
     bool check_face(std::string ticket_name)
     {
         if (ticket_name.compare("Mike") == 0)
@@ -373,14 +384,14 @@ public:
                     pass_num--;
                     return;
                 }
-                // someone's ticket has already used
+                // someone's ticket has already been used
                 else if (checker.current_ticket.used == 2)
                 {
                     say("Sorry, the ticket has already been used.", true, "deny");
                     return;
                 }
                 else
-                {   // the container alread full, ask passenger to another one
+                {   // the container alread full, ask passenger to choose another one
                     if (pass_num >= 2)
                     {
                         say("The container is full, please go to another one.", true, "deny");
@@ -396,12 +407,13 @@ public:
 
                     current_name = speech_srv.response.name;
                     
+                    // if the name from speech recognition is not None
                     if (current_name.compare("None") != 0)
                     {
-
+                        // compare name from speech and name on ticket
                         if (checker.current_ticket.passenger_Name.compare(current_name) == 0)
                         {
-                            
+                            // check face recognition
                             if (check_face(current_name))
                             {
                                 start_blink(0, 1, 0, "pass");
@@ -429,6 +441,7 @@ public:
                     stop_blink();
                 }
             }
+            // QR code not valid
             else
             {
                 start_blink(1, 0, 0, "invalid qr code");
@@ -439,7 +452,7 @@ public:
     }
 
     //////////////////////// task 3////////////////////////////////////////////////////////////
-    // wait for questions, as long as detect face in 5 second, preper to answer the questions,
+    // wait for questions, as long as detect face in 5 second, prepare to answer the questions,
     // otherwise change the state to new station
     void wait_questions()
     {
@@ -479,7 +492,7 @@ public:
             answer_questions(speech_srv.response.question);
         }
     }
-    // after detected attention, hear the keyword from passenger and answer the question base on key word
+    // after detecting attention, hear the keyword from passenger and answer the question base on key word
     void answer_questions(std::string question){
         if (question.compare("When")==0){
             // when: when will arrive hamburg
@@ -490,15 +503,15 @@ public:
             // checker.train.current_station_id
         }
         else if (question.compare("North")==0){
-            // weather: how is the weather in hamburg
+            // north: how is the weather in the north
             say("The weather in north germany is 2 degree celsius",false,"up");
         }
         else if (question.compare("South")==0){
-            // weather: how is the weather in hamburg
+            // south: how is the weather in the south
             say("The weather in sorth germany is 1 degree celsius",false,"up");
         }
         else if (question.compare("Many")==0){
-            // many: how many stations still have
+            // many: how many stations do we still have
             int station_num = 4 - checker.train.current_station_id;
             std::string temp_str;
             if (station_num == 0)
@@ -533,12 +546,9 @@ public:
     {
         pass_num--;
     }
-/*
-    void check_current_tickets()
-    {
-    }
-*/
+
     // wait function and the same time ros::spin would not stop
+    // input: time as seconds, output:none
     void wait(double duration)
     {
         double begin = ros::Time::now().toSec();
@@ -565,7 +575,7 @@ public:
             ros::spinOnce();
         }
     }
-    // function to speck words and at the same make some motions
+    // function to speck words and make some motions at the same time
     void say(std::string msg, bool with_motion, std::string motion)
     {
         control::Speak speak_srv;
@@ -613,8 +623,8 @@ public:
         eye_led_cancel_pub.publish(blink_cancel);
     }
     //////////////////////////////////////////// walk ////////////////////////////////////////////
-    // let nao work to the predifined position
-    void main_loop()
+    // let nao walk to the predifined position
+    void walk_main_loop()
 	{
 		if (!walking){			
             ROS_WARN_STREAM("Start walking!");
@@ -667,7 +677,7 @@ public:
         walking = false;
         
         say_welcome();
-        // main_loop();
+        walk_main_loop();
 
         state = Task_State::Check_Ticket;
 
@@ -697,7 +707,7 @@ public:
             ros::spinOnce();
             rate.sleep();
         }
-        main_loop();
+        walk_main_loop();
     }
 };
 

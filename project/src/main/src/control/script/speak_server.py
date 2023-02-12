@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# This is a ROS server for speaking while making some motions.
+
 import rospy
 import time
 import sys
@@ -13,7 +15,7 @@ posProxy = 0
 
 
 def service(req):
-    # check if nao just speck or speck while moving
+    # check if nao just speaks or speaks while moving
     if req.with_motion:
         isAbsolute = True
 

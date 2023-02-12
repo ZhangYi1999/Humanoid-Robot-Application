@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# This is a ROS server for speech recognition.
+
 import rospy
 import time
 import sys
@@ -9,6 +11,7 @@ speechRecogProxy = 0
 memoryProxy = 0
 posProxy = 0
 
+# key words
 name_list = ["Jack","Mike","Amy","Tom","John"]
 word_list = ["When","Many","North","South"]
 # when: when will arrive hamburg
