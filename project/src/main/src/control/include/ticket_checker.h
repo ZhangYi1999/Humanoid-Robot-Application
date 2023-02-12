@@ -32,11 +32,12 @@ struct Train_station{
 
 bool station_compare(Train_station staion1,Train_station staion2);
 
+// class for the train
 class Train{
 public:
     std::string name;
     std::vector<Train_station> stations;
-    int current_station_id;
+    int current_station_id;             
     int station_num;
     Date departure_date;
     Time departure_time;
@@ -75,12 +76,10 @@ public:
     // from string msg to ticket
     Ticket(std::string ticket_msg);
 
-
-
     bool compare(Ticket ticket);
 };
 
-
+// main class
 class TicketChecker
 {
 public:
@@ -102,12 +101,10 @@ public:
     void load_data(ros::NodeHandle nh_);
     bool checkQRcode(cv::Mat img); // check if there is valid QR code in the img
     bool checkValid(); // check if the ticket is vaild
-    bool check_face(); // check if there is face in the img
-    //bool check_attention(cv::Mat img); // check if there is passenger looking at the camera
+
     Ticket getFullTicketfromMsg(std::string msg);
 
     bool get_check_face_flag(){return check_face_flag;};
-    //bool check_station();
 
     std::string getMessage();
 

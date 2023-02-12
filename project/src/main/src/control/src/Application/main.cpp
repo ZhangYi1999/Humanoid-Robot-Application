@@ -45,6 +45,7 @@
 // self define function include
 #include "ticket_checker.h"
 
+// self designed task state, used for state machine
 enum class Task_State
 {
     Not_Start_Yet,
@@ -126,10 +127,11 @@ private:
     int pass_num;
 
 public:
+    // initialize 
     Nao_control() : it_(nh_)
     {
         state = Task_State::Not_Start_Yet;
-
+        /// ROS service, publisher and subscriber initilize
         walk_pub=nh_.advertise<geometry_msgs::Pose2D>("/cmd_pose", 1);
 		stop_walk_srv = nh_.serviceClient<std_srvs::Empty>("/stop_walk_srv");
 
@@ -153,7 +155,7 @@ public:
         speak_client = nh_.serviceClient<control::Speak>("speak_service");
 
         checker.load_data(nh_);
-
+        // initilize bool type, used for later functions
         welcome_once = true;
         heard_name = false;
 
@@ -161,7 +163,7 @@ public:
         bottomimg_updated = false;
 
         tactile_flag = false;
-
+        // store face information in vector
         current_faces.push_back(0);
         current_faces.push_back(0);
         current_faces.push_back(0);
@@ -223,7 +225,7 @@ public:
         cv::imshow("bottom camera", bottom_current_image);
         cv::waitKey(3);
     }
-
+    // when someone press the tactile, change the bool type in order to get into check ticket state
     void tactileCallback(const naoqi_bridge_msgs::HeadTouch::ConstPtr &tactileState)
     {
 
@@ -322,7 +324,7 @@ public:
         say("train departure", false, "");
     }
 
-    // check ticket valid
+    // check ticket valid, if ticket is valid, nao do and speck something
     void checkTicket()
     {
         
@@ -437,6 +439,8 @@ public:
     }
 
     //////////////////////// task 3////////////////////////////////////////////////////////////
+    // wait for questions, as long as detect face in 5 second, preper to answer the questions,
+    // otherwise change the state to new station
     void wait_questions()
     {
         bool detect_attention = true;
@@ -475,7 +479,7 @@ public:
             answer_questions(speech_srv.response.question);
         }
     }
-
+    // after detected attention, hear the keyword from passenger and answer the question base on key word
     void answer_questions(std::string question){
         if (question.compare("When")==0){
             // when: when will arrive hamburg
@@ -524,7 +528,7 @@ public:
         }
         
     }
-
+    // when passenger leave, reduce the number of passenger
     void pass_leave()
     {
         pass_num--;
@@ -561,7 +565,7 @@ public:
             ros::spinOnce();
         }
     }
-
+    // function to speck words and at the same make some motions
     void say(std::string msg, bool with_motion, std::string motion)
     {
         control::Speak speak_srv;
@@ -578,7 +582,7 @@ public:
         else
             ROS_INFO("say failed");
     }
-
+    // functions to make nao's eyes start blink
     void start_blink(double r, double g, double b, std::string id)
     {
         std_msgs::ColorRGBA color;
@@ -598,7 +602,7 @@ public:
         blink_goal.goal.blink_rate_sd = 0.05;
         eye_led_pub.publish(blink_goal);
     }
-
+    // functions to make nao's eyes stop blink
     void stop_blink()
     {
         actionlib_msgs::GoalID blink_cancel;
@@ -609,6 +613,7 @@ public:
         eye_led_cancel_pub.publish(blink_cancel);
     }
     //////////////////////////////////////////// walk ////////////////////////////////////////////
+    // let nao work to the predifined position
     void main_loop()
 	{
 		if (!walking){			

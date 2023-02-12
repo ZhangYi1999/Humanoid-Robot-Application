@@ -13,6 +13,7 @@ posProxy = 0
 
 
 def service(req):
+    # check if nao just speck or speck while moving
     if req.with_motion:
         isAbsolute = True
 
@@ -44,7 +45,7 @@ def service(req):
             max_speed  = 1.0
             mask       = 7
             motionProxy.post.setPositions(names,motion.FRAME_TORSO,target,max_speed,mask)
-        
+        # wait for questions
         elif req.motion_name == "wait":
             names_r    = "RArm"
             target_r   = [0.054214,-0.052757,-0.048563,1.266628,1.266628,1.266628]
@@ -54,7 +55,7 @@ def service(req):
             mask       = 7
             motionProxy.post.setPositions(names_l,motion.FRAME_TORSO,target_l,max_speed,mask)
             motionProxy.post.setPositions(names_r,motion.FRAME_TORSO,target_r,max_speed,mask)
-
+        # welcome motions
         elif req.motion_name == "welcome":
             names_l   = "LArm"
             target_l  = [0.143298,0.214727,0.093595,-2.782163,-2.782163,-2.782163]
@@ -64,13 +65,13 @@ def service(req):
             mask       = 7
             motionProxy.post.setPositions(names_l,motion.FRAME_TORSO,target_l,max_speed,mask)
             motionProxy.post.setPositions(names_r,motion.FRAME_TORSO,target_r,max_speed,mask)
-        
+        # move the head to search where is passenger
         elif req.motion_name == "where":
             names      = "HeadYaw"
             angleLists = [70.0*almath.TO_RAD, -70.0*almath.TO_RAD, 0.0]
             timeLists  = [0.4, 1.2, 1.6]
             motionProxy.post.angleInterpolation(names, angleLists, timeLists, isAbsolute)
-
+        # just angry
         elif req.motion_name == "angry":
             names_l   = "LArm"
             target_l  = [-0.002289,0.100365,-0.054560,-2.999208,-2.999208,-2.999208]
@@ -80,13 +81,13 @@ def service(req):
             mask       = 7
             motionProxy.post.setPositions(names_l,motion.FRAME_TORSO,target_l,max_speed,mask)
             motionProxy.post.setPositions(names_r,motion.FRAME_TORSO,target_r,max_speed,mask)
-
+        # predifined posture
         elif req.motion_name == "stand":
             posProxy.goToPosture("Stand",5)
         elif req.motion_name == "Sit":
             posProxy.goToPosture("Sit",5)
   
-        
+
     speakProxy.say(req.message)
     return SpeakResponse(True)
 
