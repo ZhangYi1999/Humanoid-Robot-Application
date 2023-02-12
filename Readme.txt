@@ -1,6 +1,7 @@
+Here is the readme from the project ticket train checker project made by Yi Zhang, Tao Ma, Yinglei Song, Chongyu Zhang. 
+
 /*******************************************************************************************/
 Important libraries (dependencies) which need to be installed
-Here is the readme from the project ticket train checker project made by Yi Zhang, Tao Ma, Yinglei Song, Chongyu Zhang. 
 /*******************************************************************************************/
 1.dlib
 2.face_recognition
@@ -24,10 +25,8 @@ Packages needed for the whole task
 /*******************************************************************************************/
 Packages:
 
-main
+control
 face
-
-Details can be seen in different Readme in each package 
 
 /*******************************************************************************************/
 Network setup

@@ -1,6 +1,6 @@
 #include<ticket_checker.h>
 
-// definition of self defined function
+// function for spliting string
 std::string str_split(std::string &input,char delim){
     // set the start and end point of sub string
     std::size_t previous = 0;
@@ -68,7 +68,7 @@ std::string Train::getName(){
     return this->name;
 }
 
-
+// load train data from yaml file
 void Train::load_data(ros::NodeHandle nh_){
     nh_.getParam("/station_count",this->station_num);
     nh_.getParam("/train_name",this->name);
@@ -117,8 +117,9 @@ void Train::load_data(ros::NodeHandle nh_){
     this->current_station_id = 0;
 }
 
+// the train moves and arrives at the next station
 bool Train::moveToNextStation(){
-    // The train moves and arrives at the next station
+    
     this->current_station_id ++; 
 
     // Determine if the current station is final staion
@@ -132,11 +133,14 @@ bool Train::moveToNextStation(){
     }
 }
 
+// train is delayed, change arrival date and time
 void Train::delay(Date new_arrival_date, Time new_arrival_time){
     this->arrival_date = new_arrival_date;
     this->arrival_time = new_arrival_time;
 }
 
+// return a Train_station
+// input: name of station, output: Train_station
 Train_station Train::getStationByName(std::string name){
     for(int i = 0; i < this-> station_num; i++) {
         if(this->stations[i].Name.compare(name)==0){
@@ -148,10 +152,12 @@ Train_station Train::getStationByName(std::string name){
     return dummy_station;
 }
 
+// return current train station
 Train_station Train::getCurrentStation(){
     return this->stations[this->current_station_id];
 }
 
+// return train station ID by input name string
 int Train::getStationIdByName(std::string name){
     for(int i = 0; i < this-> station_num; i++) {
         if(this->stations[i].Name.compare(name)==0){
@@ -185,6 +191,8 @@ Ticket::Ticket(std::string ticket_msg){
     // this->train_name = ticket_msg;
 }
 
+// compare information of current ticket and input ticket
+// output: true or false
 bool Ticket::compare(Ticket ticket){
     bool same_id = this->id == ticket.id;
     bool same_name = this->passenger_Name.compare(ticket.passenger_Name)==0;
@@ -198,6 +206,7 @@ bool Ticket::compare(Ticket ticket){
 
 //********** definition of functions of class TicketChecker **********//
 
+// load ticket data from yaml file
 void TicketChecker::load_data(ros::NodeHandle nh_){
     int ticket_count;
     nh_.getParam("/ticket_count",ticket_count);
@@ -264,6 +273,7 @@ void TicketChecker::load_data(ros::NodeHandle nh_){
     this->check_face_flag = false;
 }
 
+// check if there is QR code in the image
 bool TicketChecker::checkQRcode(cv::Mat img){
     std::vector<cv::Point> points;
     if(this->detector.detect(img,points)){
@@ -290,6 +300,7 @@ bool TicketChecker::checkQRcode(cv::Mat img){
     }
 }
 
+// check if the ticket is valid
 bool TicketChecker::checkValid(){
     if(this->found_qr_code_flag){
         // reset the found qr code flag
@@ -331,6 +342,7 @@ bool TicketChecker::checkValid(){
     return true;
 } */
 
+// get ticket by ID
 Ticket TicketChecker::getFullTicketfromMsg(std::string msg){
     for(int i = 0; i < this->ticket_num; i++){
         if(this->tickets[i].id.compare(msg)==0){
@@ -341,10 +353,12 @@ Ticket TicketChecker::getFullTicketfromMsg(std::string msg){
     }
 }
 
+// get message on the ticket
 std::string TicketChecker::getMessage(){
     return this->message;
 }
 
+// test function
 std::string TicketChecker::getError(){
     return "wrong station."; // just for test
 }
