@@ -1,24 +1,16 @@
-Here is the readme from the project ticket train checker project made by Yi Zhang, Tao Ma, Yinglei Song, Chongyu Zhang. 
+Here is the readme from the project ticket train checker project made by Yi Zhang, Yinglei Song, Tao Ma, Chongyu Zhang. 
 
 /*******************************************************************************************/
-Important libraries (dependencies) which need to be installed
+Dependencies
 /*******************************************************************************************/
-1.dlib
+1.numpy
 2.face_recognition
 
-
-How to install dlib:
-$ git clone https://github.com/davisking/dlib.git
-$ cd dlib
-$ mkdir build
-$ cd build
-$ cmake ..
-$ cmake --build
-$ cd ..
-$ python2(3) setup.py install
+How to install numpy:
+$ pip install numpy
 
 How to install face_recognition:
-$ pip2(3) install face-recognition
+$ pip install face-recognition
 
 /*******************************************************************************************/
 Packages needed for the whole task
@@ -42,7 +34,7 @@ export ROS_IP=localhost
 export ROS_MASTER_URI=http://IP_of_Master:11311
 
 localhost is IP address of own machine.
-For slave machine, you need to replace localhost to the IP address of master.
+For slave machine, you need to use the IP address of master in ROS_MASTER_URI.
 
 Detailed reference: http://wiki.ros.org/ROS/NetworkSetup
 
