@@ -1,7 +1,0 @@
-#CREATE request parameters
-string mode
-string[] names
---------------------------------
-#CREATE response parameters
-string Name
-string Question
