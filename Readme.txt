@@ -1,4 +1,4 @@
-Here is the readme from the project ticket train checker project made by Yi Zhang, Yinglei Song, Tao Ma, Chongyu Zhang. 
+This is the readme for the robot ticket checker project made by Yi Zhang, Yinglei Song, Tao Ma, Chongyu Zhang. 
 
 /*******************************************************************************************/
 Dependencies
