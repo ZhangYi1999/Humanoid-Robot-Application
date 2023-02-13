@@ -13,7 +13,7 @@ How to install face_recognition:
 $ pip install face-recognition
 
 /*******************************************************************************************/
-Packages needed for the whole task
+Packages of the whole task
 /*******************************************************************************************/
 Packages:
 
