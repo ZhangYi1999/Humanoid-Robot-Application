@@ -53,3 +53,12 @@ On laptop
 3. run: $ source devel/setup.bash
 4. run: $ rosrun face face_detect.py
 
+/*******************************************************************************************/
+Links to demo videos
+/*******************************************************************************************/
+Full Demo 1
+https://youtu.be/rvDgHgA3xF8
+Full Demo 2
+https://youtu.be/iJaAUak_v8Y
+Invalid cases
+https://youtu.be/gdtXTLhnkf8
