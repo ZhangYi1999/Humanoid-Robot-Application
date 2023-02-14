@@ -62,3 +62,9 @@ Full Demo 2
 https://youtu.be/iJaAUak_v8Y
 Invalid cases
 https://youtu.be/gdtXTLhnkf8
+
+In case 1, Mike used Jack's ticket and said he was Jack, but face recognition found the problem.
+
+In case 2, Mike used Jack's ticket and said he was Mike. The name on the ticket and the name from the speech did not match.
+
+In case 3, everything was valid.
